@@ -1,22 +1,24 @@
-# FastXXX — Native Windows XXX API for Java
+# FastContentParse 0.1.0 — Content parsing for FastJava
 
-**High-performance native Windows XXX API for Java.**
+**Lightweight Java parser and normalizer for building retrieval pipelines.**
 
-[![Build](https://img.shields.io/github/actions/workflow/status/andrestubbe/FastXXX/maven.yml?branch=main)](https://github.com/andrestubbe/FastXXX/actions)
+[![Build](https://img.shields.io/github/actions/workflow/status/andrestubbe/FastContentParse/maven.yml?branch=main)](https://github.com/andrestubbe/FastContentParse/actions)
 [![Java](https://img.shields.io/badge/Java-17+-blue.svg)](https://www.java.com)
 [![Platform](https://img.shields.io/badge/Platform-Windows%2010+-lightgrey.svg)]()
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![JitPack](https://jitpack.io/v/andrestubbe/FastXXX.svg)](https://jitpack.io/#andrestubbe/FastXXX)
+[![JitPack](https://jitpack.io/v/andrestubbe/FastContentParse.svg)](https://jitpack.io/#andrestubbe/FastContentParse)
 
-[Insert Mission Statement here: FastXXX is the high-performance substrate of the FastJava ecosystem. It provides the hand-tuned native primitives required for...]
+FastContentParse provides a pure-Java content parser, text normalization, and a simple character-based chunker for embedding pipelines. Optionally integrate the native `FastContentChunk` tokenizer (separate repo) for higher-performance tokenization.
 
 ```java
 // Quick Start — Example
-import fastxxx.FastXXX;
+import fastcontentparse.FastContentParse;
 
 public class Demo {
     public static void main(String[] args) {
-        // Your code here
+        FastContentParse p = new FastContentParse();
+        var doc = p.parseString("Hello world", "example.txt");
+        System.out.println(doc.getText());
     }
 }
 ```
