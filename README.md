@@ -1,23 +1,47 @@
-# FastContentParse 0.1.0 — Java content parser for FastJava
+# FastContentParse 0.1.0 — Java Content Parser for FastJava
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![Status](https://img.shields.io/badge/status-0.1.0-brightgreen.svg)](https://github.com/andrestubbe/FastContentParse/releases/tag/0.1.0)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Java](https://img.shields.io/badge/Java-17+-blue.svg)](https://www.java.com)
+[![Platform](https://img.shields.io/badge/Platform-Windows%2010+-lightgrey.svg)]()
+[![JitPack](https://img.shields.io/badge/JitPack-ready-green.svg)](https://jitpack.io/#andrestubbe/FastContentParse)
 
-FastContentParse is a lightweight Java library for extracting and normalizing text from files.
-It supports plain text, Markdown, RTF and PDF input, and is built to feed embedding and retrieval pipelines.
+---
 
-The repo includes a working demo that reads `docs/BHO.pdf`, parses the PDF using Apache PDFBox, and generates a local chunk preview.
+**⚡ Lightweight Java parser for text extraction, normalization, and PDF content ingestion.**
 
-## Key Features
-- Parse plain text, Markdown, RTF, and PDF files
-- Normalize whitespace and line endings
-- Extract text from PDF using Apache PDFBox
-- Demo launcher at `run-demo.bat`
-- Optional native tokenizer support via the separate `FastContentChunk` module
+**FastContentParse** extracts text from plain files, Markdown, RTF, and PDF documents, then normalizes it for embedding and retrieval pipelines. The project includes a demo that loads `docs/BHO.pdf`, parses the PDF with Apache PDFBox, and shows a local chunk preview. It is designed to work seamlessly with **[FastContentChunk](https://github.com/andrestubbe/FastContentChunk)** for high-performance native tokenization.
+
+---
+
+## Table of Contents
+
+- [Why FastContentParse?](#why-fastcontentparse)
+- [Quick Start](#quick-start)
+- [Features](#features)
+- [API Quick Reference](#api-quick-reference)
+- [Installation](#installation)
+- [Documentation](#documentation)
+- [Platform Support](#platform-support)
+- [License](#license)
+- [Related Projects](#related-projects)
+
+---
+
+## Why FastContentParse?
+
+Most Java content pipelines rely on brittle file readers or heavyweight libraries. FastContentParse is focused on the most common content sources for retrieval workflows: text, Markdown, RTF, and PDF.
+
+It provides:
+
+- **Simple file parsing** with consistent normalization across all formats.
+- **PDF extraction** via Apache PDFBox without requiring full desktop document frameworks.
+- **A clean demo workflow** with a single `run-demo.bat` entry point.
+- **Optional native tokenizer integration** through the separate `FastContentChunk` module for SIMD-accelerated chunking.
+
+---
 
 ## Quick Start
-
-From the `FastContentParse` folder:
 
 ```powershell
 cd FastContentParse
@@ -25,64 +49,118 @@ mvn clean install -DskipTests -q
 .\run-demo.bat
 ```
 
-The demo uses `docs\BHO.pdf` and prints a text preview plus generated chunks.
-
-## Project Layout
-- `src/main/java/fastcontentparse` — core parser implementation
-- `src/test/java/fastcontentparse` — unit tests
-- `examples/DemoFastContent` — standalone demo application
-- `docs/BHO.pdf` — demo PDF input file
-- `run-demo.bat` — recommended demo launcher
-- `run-benchmark.bat` — benchmark entrypoint
-
-## Usage
-
-Parse a string:
+The demo reads `docs\BHO.pdf`, prints extracted text, and shows generated chunks.
 
 ```java
 import fastcontentparse.FastContentParse;
 import fastcontentparse.ParsedDocument;
 
 FastContentParse parser = new FastContentParse();
-ParsedDocument doc = parser.parseString("Hello world", "example.txt");
+ParsedDocument doc = parser.parseFile(java.nio.file.Path.of("docs/BHO.pdf"));
+System.out.println(doc.getType());
 System.out.println(doc.getText());
 ```
 
-Parse a file:
+---
 
-```java
-ParsedDocument pdfDoc = parser.parseFile(java.nio.file.Path.of("docs/BHO.pdf"));
-System.out.println(pdfDoc.getType());
-System.out.println(pdfDoc.getText());
-```
+## Features
 
-## Maven Dependency
+- **📄 Plain text and Markdown parsing** — Consistent text extraction from common formats.
+- **🎨 RTF formatting stripping** — Removes rich text formatting while preserving content.
+- **📑 PDF text extraction** — Powered by Apache PDFBox for reliable PDF parsing.
+- **🧹 Whitespace normalization** — Uniform text processing across all file types.
+- **🚀 Standalone demo application** — Complete example in `examples/DemoFastContent`.
+- **⚡ Optional native tokenization** — Integration with `FastContentChunk` for high-performance chunking.
+
+---
+
+## API Quick Reference
+
+| Method | Description |
+|--------|-------------|
+| `parseString(String rawText, String sourceName)` | Parse raw text and normalize content | 
+| `parseFile(Path path)` | Parse a file and auto-detect type by extension |
+
+---
+
+## Installation
+
+### Option 1: Maven (Recommended)
+
+Add the JitPack repository and the dependency to your `pom.xml`:
 
 ```xml
-<dependency>
-  <groupId>com.github.andrestubbe</groupId>
-  <artifactId>FastContentParse</artifactId>
-  <version>0.1.0</version>
-</dependency>
+<repositories>
+    <repository>
+        <id>jitpack.io</id>
+        <url>https://jitpack.io</url>
+    </repository>
+</repositories>
+<dependencies>
+    <dependency>
+        <groupId>com.github.andrestubbe</groupId>
+        <artifactId>FastContentParse</artifactId>
+        <version>0.1.0</version>
+    </dependency>
+</dependencies>
 ```
 
-## Optional Native Chunking
+### Option 2: Gradle (via JitPack)
 
-`FastContentParse` is a parser library only. For native tokenizer / chunking support, use the separate `FastContentChunk` module.
-That module is optional and not required for the basic parser demo.
+```groovy
+repositories {
+    maven { url 'https://jitpack.io' }
+}
 
-## Build and Test
-
-```powershell
-cd FastContentParse
-mvn clean install -DskipTests -q
-mvn test -q
+dependencies {
+    implementation 'com.github.andrestubbe:FastContentParse:0.1.0'
+}
 ```
 
-## Notes
-- `run-demo.bat` is the recommended demo entry point.
-- `run-benchmark.bat` is for benchmarking and not required for normal demo use.
+### Option 3: Direct Download (No Build Tool)
+
+Download the latest JAR directly to add it to your classpath:
+
+1. 📦 **[FastContentParse-0.1.0.jar](https://github.com/andrestubbe/FastContentParse/releases/download/0.1.0/FastContentParse-0.1.0.jar)** (The Core Library)
+
+### Optional Native Tokenizer
+
+If you need high-performance chunking, add the separate `FastContentChunk` module. This is optional and not required for the core parser demo.
+
+---
+
+## Documentation
+
+- **[COMPILE.md](COMPILE.md)** — Build instructions
+- **[README.md](README.md)** — Project overview
+- `src/main/java/fastcontentparse` — Core parser API
+- `examples/DemoFastContent` — Demo source and launcher
+
+---
+
+## Platform Support
+
+| Platform | Status |
+|----------|--------|
+| Windows 10/11 | ✅ Fully Supported |
+| Linux | 🚧 Planned |
+| macOS | 🚧 Planned |
+
+---
 
 ## License
-MIT — see `LICENSE`.
+
+MIT License — See [LICENSE](LICENSE) file for details.
+
+---
+
+## Related Projects
+
+- [FastContentChunk](https://github.com/andrestubbe/FastContentChunk) — Optional native tokenizer and chunking module
+- [FastCore](https://github.com/andrestubbe/FastCore) — Native JNI loader for FastJava libraries
+- [FastPreview](https://github.com/andrestubbe/FastPreview) — Content preview and rendering engine
+
+---
+
+**Part of the FastJava Ecosystem** — *small, fast, and practical Java modules.*
 
