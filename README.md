@@ -102,6 +102,12 @@ Add the JitPack repository and the dependency to your `pom.xml`:
         <artifactId>FastContentParse</artifactId>
         <version>0.1.0</version>
     </dependency>
+    <!-- Required for native library loading -->
+    <dependency>
+        <groupId>com.github.andrestubbe</groupId>
+        <artifactId>FastCore</artifactId>
+        <version>main-SNAPSHOT</version>
+    </dependency>
 </dependencies>
 ```
 
@@ -114,14 +120,17 @@ repositories {
 
 dependencies {
     implementation 'com.github.andrestubbe:FastContentParse:0.1.0'
+    // Required for native library loading
+    implementation 'com.github.andrestubbe:FastCore:main-SNAPSHOT'
 }
 ```
 
 ### Option 3: Direct Download (No Build Tool)
 
-Download the latest JAR directly to add it to your classpath:
+Download the latest JARs directly to add them to your classpath:
 
 1. 📦 **[FastContentParse-0.1.0.jar](https://github.com/andrestubbe/FastContentParse/releases/download/0.1.0/FastContentParse-0.1.0.jar)** (The Core Library)
+2. 📦 **[FastCore-main-SNAPSHOT.jar](https://github.com/andrestubbe/FastCore/releases/download/main-SNAPSHOT/FastCore-main-SNAPSHOT.jar)** (Required Native JNI Loader)
 
 ### Optional Native Tokenizer
 
