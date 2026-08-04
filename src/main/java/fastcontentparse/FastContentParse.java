@@ -9,6 +9,10 @@ import java.util.List;
 import java.util.Locale;
 import java.util.regex.Pattern;
 
+import org.apache.pdfbox.Loader;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.text.PDFTextStripper;
+
 public class FastContentParse {
 
     public ParsedDocument parseFile(Path path) throws IOException {
@@ -16,8 +20,12 @@ public class FastContentParse {
             throw new IOException("Input file does not exist");
         }
 
-        String raw = Files.readString(path, StandardCharsets.UTF_8);
         String type = detectType(path.getFileName().toString());
+        if ("application/pdf".equals(type)) {
+            return parsePdf(path);
+        }
+
+        String raw = Files.readString(path, StandardCharsets.UTF_8);
         return parseString(raw, path.getFileName().toString(), type);
     }
 
@@ -35,23 +43,9 @@ public class FastContentParse {
             return List.of();
         }
 
-        String normalized = normalizeWhitespace(text);
-        List<String> chunks = new ArrayList<>();
-        int window = Math.max(1, maxChunkSize);
-        int step = Math.max(1, window - overlap);
-
-        for (int start = 0; start < normalized.length(); start += step) {
-            int end = Math.min(start + window, normalized.length());
-            String chunk = normalized.substring(start, end).trim();
-            if (!chunk.isEmpty()) {
-                chunks.add(chunk);
-            }
-            if (end >= normalized.length()) {
-                break;
-            }
-        }
-
-        return chunks;
+        // Chunking moved to FastContentChunk (native or Java wrapper).
+        // FastContentParse no longer provides a built-in chunker — use FastContentChunk instead.
+        throw new UnsupportedOperationException("chunkText was removed from FastContentParse; use FastContentChunk library");
     }
 
     private String normalize(String rawText, String explicitType) {
@@ -102,5 +96,15 @@ public class FastContentParse {
             return "application/msword";
         }
         return "text/plain";
+    }
+
+    private ParsedDocument parsePdf(Path path) throws IOException {
+        try (PDDocument document = Loader.loadPDF(path.toFile())) {
+            PDFTextStripper stripper = new PDFTextStripper();
+            stripper.setSortByPosition(true);
+            String raw = stripper.getText(document);
+            String normalized = normalize(raw, "application/pdf");
+            return new ParsedDocument("application/pdf", normalized);
+        }
     }
 }

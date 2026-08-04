@@ -1,7 +1,19 @@
 @echo off
+chcp 65001 >nul
+cls
 
-echo [_BluePrint] Running Demo (via JitPack)...
-cd examples
-call mvn compile exec:java -Dexec.mainClass=fastXXX.Demo
-cd ..
+echo ⚡ Building Main Project...
+call mvn clean install -DskipTests -q
+if %ERRORLEVEL% NEQ 0 ( echo ❌ Build failed. & pause & exit /b %ERRORLEVEL% )
+
+echo 🛠  Compiling Demo...
+cd examples\DemoFastContent
+call mvn compile dependency:build-classpath -Dmdep.outputFile=cp.txt -DincludeScope=runtime -q
+if %ERRORLEVEL% NEQ 0 ( echo ❌ Compile failed. & pause & exit /b %ERRORLEVEL% )
+
+echo 🚀 Running Demo...
+set /p CP=<cp.txt
+java -cp "target\classes;%CP%" fastcontentdemo.DemoFastContent
+
+cd ..\..
 pause

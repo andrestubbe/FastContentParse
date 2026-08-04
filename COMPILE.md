@@ -1,3 +1,47 @@
+# Building FastContentParse
+
+## Prerequisites
+
+- JDK 17+
+- Maven 3.9+
+- For native `FastContentChunk` builds: Visual Studio 2019/2022 (or Build Tools) and CMake
+
+## Quick Build (Java only)
+
+```powershell
+cd FastContentParse
+mvn clean package -DskipTests
+```
+
+## Build Native `FastContentChunk` (optional, Windows)
+
+1. Open PowerShell (Developer) or ensure VC++ build tools are in PATH.
+2. From the project root:
+
+```powershell
+cd FastContentParse\native\fastchunk
+mkdir build; cd build
+# If you have system cmake available use `cmake ..` otherwise use the Visual Studio packaged cmake
+cmake ..
+cmake --build . --config Release
+```
+
+Expected output: `build\Release\fastchunk.dll` (or platform equivalent).
+
+## Running the Demo
+
+Make the native DLL visible to Java (adjust path if needed):
+
+```powershell
+cd FastContentParse
+mvn -DskipTests package
+java -Djava.library.path="native\fastchunk\build\Release" -cp target\FastContentParse-0.1.0.jar;target\classes;target\dependency/* fastcontentdemo.DemoFastContent
+```
+
+## Troubleshooting
+
+- "Cannot find DLL": ensure `fastchunk.dll` exists in the path supplied to `-Djava.library.path` or in system PATH.
+- "UnsatisfiedLinkError": verify JNI symbol names (native function signatures) and that the `.def` exports are correct if used.
 # Building FastXXX from Source
 
 ## Prerequisites
