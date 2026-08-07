@@ -140,7 +140,7 @@ If you need high-performance chunking, add the separate `FastContentChunk` modul
 
 ## Documentation
 
-- **[COMPILE.md](COMPILE.md)** — Build instructions
+- **[COMPILE.md](docs/COMPILE.md)** — Build instructions
 - **[README.md](README.md)** — Project overview
 - `src/main/java/fastcontentparse` — Core parser API
 - `examples/DemoFastContent` — Demo source and launcher

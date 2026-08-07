@@ -64,20 +64,20 @@ mvn clean package -DskipTests
 
 | Command | Purpose |
 |---------|---------|
-| `compile.bat` | Build native DLL (Windows) |
+| `../compile.bat` | Build native DLL (Windows) |
 | `mvn clean compile` | Compile Java only |
 | `mvn clean package` | Build FatJAR with DLL embedded |
 | `mvn test` | Run unit tests |
 
 ## Native DLL Build
 
-The `compile.bat` script:
+The `../compile.bat` script:
 - Auto-detects Visual Studio 2019/2022
 - Auto-detects JAVA_HOME
 - Uses `native\fastXXX.def` for JNI exports
 - Outputs to `build\fastXXX.dll`
 
-The Maven `pom.xml` will automatically pick up `build\fastXXX.dll` and bundle it inside the JAR.
+The Maven `../pom.xml` will automatically pick up `build\fastXXX.dll` and bundle it inside the JAR.
 
 ## JNI Exports (.def File)
 
@@ -96,7 +96,7 @@ Without the `.def` file, JNI methods won't be exported and you'll get `Unsatisfi
 
 ## Troubleshooting
 
-**"Cannot find DLL"** — Run `compile.bat` first
+**"Cannot find DLL"** — Run `../compile.bat` first
 
 **"UnsatisfiedLinkError"** — Common causes:
 1. DLL built but not included in JAR (check `build/` folder).
