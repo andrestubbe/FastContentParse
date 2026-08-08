@@ -12,13 +12,40 @@
 
 **FastContentParse** extracts text from plain files, Markdown, RTF, and PDF documents, then normalizes it for embedding and retrieval pipelines. The project includes a demo that loads `docs/BHO.pdf`, parses the PDF with Apache PDFBox, and shows a local chunk preview. It is designed to work seamlessly with **[FastContentChunk](https://github.com/andrestubbe/FastContentChunk)** for high-performance native tokenization.
 
+[![Showcase](docs/screenshot.png)](https://youtu.be/4dDMeUfrQ3w)
+
+---
+
+## Quick Start — Example
+
+```java
+import fastcontentparse.FastContentParse;
+import fastcontentparse.ParsedDocument;
+import java.nio.file.Path;
+
+public class Demo {
+    public static void main(String[] args) throws Exception {
+        // 1. Initialize Document Parser
+        FastContentParse parser = new FastContentParse();
+
+        // 2. Parse PDF / RTF / Markdown Document
+        ParsedDocument doc = parser.parseFile(Path.of("docs/BHO.pdf"));
+
+        // 3. Inspect Extracted Type and Normalized UTF-8 Text
+        System.out.println("Document Type: " + doc.getType());
+        System.out.println("Extracted Text Preview:\n" + doc.getText().substring(0, 200) + "...");
+    }
+}
+```
+
 ---
 
 ## Table of Contents
 
 - [Why FastContentParse?](#why-fastcontentparse)
-- [Quick Start](#quick-start)
-- [Features](#features)
+- [Key Features](#key-features)
+- [Performance Benchmarks](#performance-benchmarks)
+- [Architecture Overview](#architecture-overview)
 - [API Quick Reference](#api-quick-reference)
 - [Installation](#installation)
 - [Documentation](#documentation)
@@ -36,30 +63,8 @@ It provides:
 
 - **Simple file parsing** with consistent normalization across all formats.
 - **PDF extraction** via Apache PDFBox without requiring full desktop document frameworks.
-- **A clean demo workflow** with a single `run-demo.bat` entry point.
+- **Single-Pass RTF stripper** eliminating 4 sequential regex passes.
 - **Optional native tokenizer integration** through the separate `FastContentChunk` module for SIMD-accelerated chunking.
-
----
-
-## Quick Start
-
-```powershell
-cd FastContentParse
-mvn clean install -DskipTests -q
-.\run-demo.bat
-```
-
-The demo reads `docs\BHO.pdf`, prints extracted text, and shows generated chunks.
-
-```java
-import fastcontentparse.FastContentParse;
-import fastcontentparse.ParsedDocument;
-
-FastContentParse parser = new FastContentParse();
-ParsedDocument doc = parser.parseFile(java.nio.file.Path.of("docs/BHO.pdf"));
-System.out.println(doc.getType());
-System.out.println(doc.getText());
-```
 
 ---
 
