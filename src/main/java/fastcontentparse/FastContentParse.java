@@ -63,6 +63,10 @@ public class FastContentParse {
             text = stripRtf(text);
         }
 
+        if (explicitType != null && explicitType.toLowerCase(Locale.ROOT).contains("pdf")) {
+            return text.trim();
+        }
+
         return normalizeWhitespace(text);
     }
 
@@ -106,7 +110,7 @@ public class FastContentParse {
     }
 
     private String normalizeWhitespace(String text) {
-        return WS_PATTERN.matcher(text).replaceAll(" ").trim();
+        return text.replaceAll("[\\t\\f\\v]+", " ").replaceAll(" +", " ").trim();
     }
 
     private String detectType(String sourceName) {
@@ -135,10 +139,11 @@ public class FastContentParse {
 
     private ParsedDocument parsePdf(Path path) throws IOException {
         try (PDDocument document = Loader.loadPDF(path.toFile())) {
-            PDFTextStripper stripper = new PDFTextStripper();
-            stripper.setSortByPosition(true);
+            PDFTextStripper stripper = new VisualParagraphPDFTextStripper();
             String raw = stripper.getText(document);
-            String normalized = normalize(raw, "application/pdf");
+            // Insert section double newlines before paragraph symbols § and Section headers
+            String withSectionBreaks = raw.replaceAll("(?<!\\n)(§|Section\\s+[I|V|X]+)", "\n\n$1");
+            String normalized = normalize(withSectionBreaks, "application/pdf");
             return new ParsedDocument("application/pdf", normalized);
         }
     }
