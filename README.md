@@ -93,21 +93,17 @@ ParseBenchmark.benchmarkRtfSinglePassStrip  thrpt    5  954.328 ± 266.643  ops/
 
 ## Architecture Overview
 
-**[FastContentParse](https://github.com/andrestubbe/FastContentParse) (This Library — The Parser)**  
+**FastContentParse (This Library — The Parser)**  
 Converts unstructured binary documents (PDF, RTF, Markdown, TXT) into normalized UTF-8 text streams.
 
 **[FastContentChunk](https://github.com/andrestubbe/FastContentChunk) (The Strategy Engine)**  
 Segments normalized text streams into contextual passages with Parent-Child context.
-- **`RECURSIVE`**: Hierarchical paragraph -> sentence -> SIMD token splitting with Parent-Child context.
-- **`PARAGRAPHS`**: Splits strictly on structural paragraph breaks (`\n\n`).
-- **`SENTENCES`**: Splits on sentence boundaries with abbreviation protection.
-- **`TOKENS`**: Fixed SIMD-accelerated token window.
 
 **[FastAIVectorDB](https://github.com/andrestubbe/FastAIVectorDB) (The Vector Store)**  
 High-speed native C++ SIMD vector database storing small `chunk.text` embeddings for sub-5ms similarity retrieval.
 
 **[FastAIRag](https://github.com/andrestubbe/FastAIRag) (The Orchestration Pipeline)**  
-Higher-level RAG framework that orchestrates **[FastContentParse](https://github.com/andrestubbe/FastContentParse)** and **[FastContentChunk](https://github.com/andrestubbe/FastContentChunk)**, indexes small `chunk.text` embeddings into **[FastAIVectorDB](https://github.com/andrestubbe/FastAIVectorDB)**, and feeds `chunk.parentText` to **[FastAIBot](https://github.com/andrestubbe/FastAIBot)** for LLM response generation.
+Higher-level RAG framework that orchestrates **FastContentParse** and **[FastContentChunk](https://github.com/andrestubbe/FastContentChunk)**, indexes small `chunk.text` embeddings into **[FastAIVectorDB](https://github.com/andrestubbe/FastAIVectorDB)**, and feeds `chunk.parentText` to **[FastAIBot](https://github.com/andrestubbe/FastAIBot)** for LLM response generation.
 
 ---
 
