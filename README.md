@@ -109,10 +109,10 @@ Higher-level RAG framework that orchestrates **FastContentParse** and **[FastCon
 
 ## API Quick Reference
 
-| Method | Description |
-|--------|-------------|
-| `parseString(String rawText, String sourceName)` | Parse raw text and normalize content | 
-| `parseFile(Path path)` | Parse a file and auto-detect type by extension |
+| Method | Description | Path |
+|--------|-------------|------|
+| `parseString(String, String)` | Parse raw text and normalize content. | [Reference →](docs/REFERENCE.md#parsestring) |
+| `parseFile(Path)` | Parse a file and auto-detect type by extension. | [Reference →](docs/REFERENCE.md#parsefile) |
 
 ---
 
@@ -173,10 +173,11 @@ If you need high-performance chunking, add the separate `FastContentChunk` modul
 
 ## Documentation
 
-- **[COMPILE.md](docs/COMPILE.md)** — Build instructions
-- **[README.md](README.md)** — Project overview
-- `src/main/java/fastcontentparse` — Core parser API
-- `examples/DemoFastContent` — Demo source and launcher
+* **[REFERENCE.md](docs/REFERENCE.md)**: Full API contracts and parser method details.
+* **[PHILOSOPHY.md](docs/PHILOSOPHY.md)**: Zero-overhead document parsing philosophy.
+* **[COMPILE.md](docs/COMPILE.md)**: Maven build instructions.
+* **[CHANGELOG.md](docs/CHANGELOG.md)**: Project history.
+* **[ROADMAP.md](docs/ROADMAP.md)**: Future development goals.
 
 ---
 
@@ -198,11 +199,14 @@ MIT License — See [LICENSE](LICENSE) file for details.
 
 ## Related Projects
 
-- [FastContentChunk](https://github.com/andrestubbe/FastContentChunk) — Optional native tokenizer and chunking module
+- [FastContentChunk](https://github.com/andrestubbe/FastContentChunk) — High-performance native SIMD tokenizer and multi-mode strategy chunker
+- [FastAIVectorDB](https://github.com/andrestubbe/FastAIVectorDB) — High-speed native C++ SIMD vector database
+- [FastAIRag](https://github.com/andrestubbe/FastAIRag) — Retrieval-Augmented Generation pipeline client
 - [FastCore](https://github.com/andrestubbe/FastCore) — Native JNI loader for FastJava libraries
-- [FastPreview](https://github.com/andrestubbe/FastPreview) — Content preview and rendering engine
+- [FastAI](https://github.com/andrestubbe/fastai) — Unified lightweight AI model client interface
+- [FastAIModel](https://github.com/andrestubbe/FastAIModel) — Embedded ONNX runtime for local feature embeddings
+- [FastAIBot](https://github.com/andrestubbe/FastAIBot) — Autonomous conversational AI bot engine
+- [FastAIAgent](https://github.com/andrestubbe/FastAIAgent) — Autonomous agentic workflow execution framework
 
----
-
-**Part of the FastJava Ecosystem** — *small, fast, and practical Java modules.*
+Part of the FastJava Ecosystem — Making the JVM faster. Small package. Maximum speed. Zero bloat. 🚀📋
 
