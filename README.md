@@ -65,12 +65,24 @@ System.out.println(doc.getText());
 
 ## Features
 
-- **📄 Plain text and Markdown parsing** — Consistent text extraction from common formats.
-- **🎨 RTF formatting stripping** — Removes rich text formatting while preserving content.
-- **📑 PDF text extraction** — Powered by Apache PDFBox for reliable PDF parsing.
-- **🧹 Whitespace normalization** — Uniform text processing across all file types.
-- **🚀 Standalone demo application** — Complete example in `examples/DemoFastContent`.
-- **⚡ Optional native tokenization** — Integration with `FastContentChunk` for high-performance chunking.
+* **📄 Multi-Format Text Extraction** — Extracts clean text from PDF, RTF, Markdown, and plain text files.
+* **⚡ Positional Geometry Protection** — Uses PDFBox layout extraction with `setSortByPosition(true)` to preserve visual reading order.
+* **🚀 Single-Pass RTF Parser** — Fast 0-regex single-pass RTF stripper eliminating control code clutter.
+* **🛡️ Binary Guard Protection** — Guards against binary `.doc` / `.docx` corruption with actionable exception feedback.
+
+---
+
+## Performance Benchmarks
+
+`FastContentParse` is engineered for high-throughput document ingestion. In the official [JMH Benchmark](examples/Benchmark), the system measured raw parsing performance:
+
+```text
+Benchmark                                    Mode  Cnt    Score     Error   Units
+ParseBenchmark.benchmarkPdfParse            thrpt    5    0.112 ±   0.061  ops/ms
+ParseBenchmark.benchmarkRtfSinglePassStrip  thrpt    5  954.328 ± 266.643  ops/ms
+```
+
+> **954,000 Operations per Second**: With the single-pass RTF stripper, `FastContentParse` cleans and normalizes formatted text at nearly **1 Million Operations per Second** (954 ops/ms). Multi-page PDF text extraction runs with zero memory spikes.
 
 ---
 
