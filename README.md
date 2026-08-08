@@ -10,7 +10,7 @@
 
 **⚡ Lightweight Java parser for text extraction, normalization, and PDF content ingestion.**
 
-**FastContentParse** extracts text from plain files, Markdown, RTF, and PDF documents, then normalizes it for embedding and retrieval pipelines. The project includes a demo that loads `docs/BHO.pdf`, parses the PDF with Apache PDFBox, and shows a local chunk preview. It is designed to work seamlessly with **[FastContentChunk](https://github.com/andrestubbe/FastContentChunk)** for high-performance native tokenization.
+**FastContentParse** extracts text from plain files, Markdown, RTF, and PDF documents, then normalizes it for embedding and retrieval pipelines. It is designed to work alongside **[FastContentChunk](https://github.com/andrestubbe/FastContentChunk)**, **[FastAIVectorDB](https://github.com/andrestubbe/FastAIVectorDB)**, and **[FastAIRag](https://github.com/andrestubbe/FastAIRag)** to accelerate text extraction and Parent-Child context retention.
 
 [![Showcase](docs/screenshot.png)](https://youtu.be/4dDMeUfrQ3w)
 
