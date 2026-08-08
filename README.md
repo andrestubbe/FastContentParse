@@ -63,7 +63,7 @@ System.out.println(doc.getText());
 
 ---
 
-## Features
+## Key Features
 
 * **📄 Multi-Format Text Extraction** — Extracts clean text from PDF, RTF, Markdown, and plain text files.
 * **⚡ Positional Geometry Protection** — Uses PDFBox layout extraction with `setSortByPosition(true)` to preserve visual reading order.
@@ -83,6 +83,26 @@ ParseBenchmark.benchmarkRtfSinglePassStrip  thrpt    5  954.328 ± 266.643  ops/
 ```
 
 > **954,000 Operations per Second**: With the single-pass RTF stripper, `FastContentParse` cleans and normalizes formatted text at nearly **1 Million Operations per Second** (954 ops/ms). Multi-page PDF text extraction runs with zero memory spikes.
+
+---
+
+## Architecture Overview
+
+**[FastContentParse](https://github.com/andrestubbe/FastContentParse) (This Library — The Parser)**  
+Converts unstructured binary documents (PDF, RTF, Markdown, TXT) into normalized UTF-8 text streams.
+
+**[FastContentChunk](https://github.com/andrestubbe/FastContentChunk) (The Strategy Engine)**  
+Segments normalized text streams into contextual passages with Parent-Child context.
+- **`RECURSIVE`**: Hierarchical paragraph -> sentence -> SIMD token splitting with Parent-Child context.
+- **`PARAGRAPHS`**: Splits strictly on structural paragraph breaks (`\n\n`).
+- **`SENTENCES`**: Splits on sentence boundaries with abbreviation protection.
+- **`TOKENS`**: Fixed SIMD-accelerated token window.
+
+**[FastAIVectorDB](https://github.com/andrestubbe/FastAIVectorDB) (The Vector Store)**  
+High-speed native C++ SIMD vector database storing small `chunk.text` embeddings for sub-5ms similarity retrieval.
+
+**[FastAIRag](https://github.com/andrestubbe/FastAIRag) (The Orchestration Pipeline)**  
+Higher-level RAG framework that orchestrates **[FastContentParse](https://github.com/andrestubbe/FastContentParse)** and **[FastContentChunk](https://github.com/andrestubbe/FastContentChunk)**, indexes small `chunk.text` embeddings into **[FastAIVectorDB](https://github.com/andrestubbe/FastAIVectorDB)**, and feeds `chunk.parentText` to **[FastAIBot](https://github.com/andrestubbe/FastAIBot)** for LLM response generation.
 
 ---
 
