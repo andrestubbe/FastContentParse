@@ -62,6 +62,7 @@ Most Java content pipelines rely on brittle file readers or heavyweight librarie
 It provides:
 
 - **Simple file parsing** with consistent normalization across all formats.
+- **Layout-based visual paragraph detection** for PDF documents using line Y-coordinate offsets to preserve natural section boundaries.
 - **PDF extraction** via Apache PDFBox without requiring full desktop document frameworks.
 - **Single-Pass RTF stripper** eliminating 4 sequential regex passes.
 - **Optional native tokenizer integration** through the separate `FastContentChunk` module for SIMD-accelerated chunking.
