@@ -12,7 +12,7 @@
 
 **FastContentParse** extracts text from plain files, Markdown, RTF, and PDF documents, then normalizes it for embedding and retrieval pipelines. It is designed to work alongside **[FastContentChunk](https://github.com/andrestubbe/FastContentChunk)**, **[FastAIVectorDB](https://github.com/andrestubbe/FastAIVectorDB)**, and **[FastAIRag](https://github.com/andrestubbe/FastAIRag)** to accelerate text extraction and Parent-Child context retention.
 
-[![Showcase](docs/screenshot.png)](https://youtu.be/4dDMeUfrQ3w)
+[![Showcase](docs/screenshot.png)](https://youtu.be/0QcuZMc58hM)
 
 ---
 
