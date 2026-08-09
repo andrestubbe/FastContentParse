@@ -32,6 +32,10 @@ public class FastContentParse {
             return parsePdf(path);
         }
 
+        if ("image/ocr".equals(type)) {
+            return parseImageOcr(path);
+        }
+
         String raw = Files.readString(path, StandardCharsets.UTF_8);
         return parseString(raw, fileName, type);
     }
@@ -134,7 +138,21 @@ public class FastContentParse {
         if (lower.endsWith(".docx")) {
             return "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
         }
+        if (lower.endsWith(".png") || lower.endsWith(".jpg") || lower.endsWith(".jpeg") || lower.endsWith(".bmp")) {
+            return "image/ocr";
+        }
         return "text/plain";
+    }
+
+    private ParsedDocument parseImageOcr(Path path) throws IOException {
+        try {
+            fastocr.FastOCR ocr = new fastocr.FastOCR("en");
+            String text = ocr.read(path.toAbsolutePath().toString());
+            String normalized = normalize(text, "text/plain");
+            return new ParsedDocument("image/ocr", normalized);
+        } catch (Exception e) {
+            throw new IOException("FastOCR failed to recognize text in image: " + e.getMessage(), e);
+        }
     }
 
     private ParsedDocument parsePdf(Path path) throws IOException {
