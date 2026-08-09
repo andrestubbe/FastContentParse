@@ -157,11 +157,10 @@ public class FastContentParse {
 
     private ParsedDocument parsePdf(Path path) throws IOException {
         try (PDDocument document = Loader.loadPDF(path.toFile())) {
-            PDFTextStripper stripper = new VisualParagraphPDFTextStripper();
-            String raw = stripper.getText(document);
-            // Insert section double newlines before paragraph symbols § and Section headers
-            String withSectionBreaks = raw.replaceAll("(?<!\\n)(§|Section\\s+[I|V|X]+)", "\n\n$1");
-            String normalized = normalize(withSectionBreaks, "application/pdf");
+            VisualParagraphPDFTextStripper2 stripper = new VisualParagraphPDFTextStripper2();
+            stripper.getText(document); // process document text positions
+            String raw = stripper.buildVisualText();
+            String normalized = normalize(raw, "application/pdf");
             return new ParsedDocument("application/pdf", normalized);
         }
     }
