@@ -1,31 +1,73 @@
 package demo;
 
+import fastansi.FastANSI;
 import fastcontentparse.FastContentParse;
 import fastcontentparse.ParsedDocument;
-import java.util.List;
-import java.util.ArrayList;
+
+import java.io.PrintStream;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
 
 public class Demo {
-    public static void main(String[] args) {
-        System.out.println("=== FastContentParse Demo ===");
 
-        java.nio.file.Path pdfPath = java.nio.file.Path.of("docs", "sample.pdf");
+    private static String gray(String text) {
+        return FastANSI.FG_BRIGHT_BLACK + text + FastANSI.RESET;
+    }
+
+    private static String white(String text) {
+        return FastANSI.FG_BRIGHT_WHITE + text + FastANSI.RESET;
+    }
+
+    private static String cyan(String text) {
+        return FastANSI.FG_BRIGHT_CYAN + text + FastANSI.RESET;
+    }
+
+    public static void main(String[] args) {
+        try {
+            System.setOut(new PrintStream(System.out, true, StandardCharsets.UTF_8));
+            System.setErr(new PrintStream(System.err, true, StandardCharsets.UTF_8));
+        } catch (Exception ignored) {}
+
+        System.out.println(cyan("=== FastContentParse Demo ===") + "\n");
+
+        Path pdfPath = Path.of("docs", "sample.pdf");
         if (!pdfPath.toFile().exists()) {
-            pdfPath = java.nio.file.Path.of("..", "..", "docs", "sample.pdf");
+            pdfPath = Path.of("..", "..", "docs", "sample.pdf");
         }
-        System.out.println("PDF source: " + pdfPath.toAbsolutePath());
+
+        System.out.println(gray("[1/2] DOCUMENT INGESTION & PARSING"));
+        System.out.println(gray("      Source PDF: ") + white(pdfPath.toAbsolutePath().toString()));
 
         FastContentParse parser = new FastContentParse();
         ParsedDocument doc;
         try {
+            long t0 = System.nanoTime();
             doc = parser.parseFile(pdfPath);
-            System.out.println("Parsed text length: " + doc.getText().length());
-            System.out.println("Parsed text preview:\n" + doc.getText().lines().limit(10).reduce((a, b) -> a + "\n" + b).orElse(""));
+            long parseUs = (System.nanoTime() - t0) / 1000;
+
+            System.out.println(gray(String.format("      ✓ Parsed in %,d µs | Extracted %,d characters | Type: ", parseUs, doc.getText().length())) + cyan(doc.getType()) + "\n");
+
+            // ── Phase 2: Visual Paragraph Breakdown ───────────────────
+            System.out.println(gray("[2/2] VISUAL LAYOUT PARAGRAPH BREAKDOWN (Y-Gap Detected)"));
+            String[] paragraphs = doc.getText().split("\n\\s*\n");
+            System.out.println(gray(String.format("      ✓ Detected %,d visual paragraphs separated by \\n\\n.", paragraphs.length)));
+            System.out.println(gray("      ----------------------------------------------------------"));
+
+            int limit = Math.min(5, paragraphs.length);
+            for (int i = 0; i < limit; i++) {
+                String snippet = paragraphs[i].replaceAll("\\s+", " ").trim();
+                if (snippet.length() > 140) {
+                    snippet = snippet.substring(0, 140) + "...";
+                }
+                System.out.println(gray("      • [Paragraph #" + (i + 1) + "] ") + white(snippet));
+            }
+            System.out.println(gray("      ----------------------------------------------------------"));
+
         } catch (Exception e) {
-            System.out.println("Failed to parse PDF: " + e.getMessage());
+            System.out.println(gray("❌ Failed to parse PDF: ") + e.getMessage());
             return;
         }
 
-        System.out.println("=== Demo Complete ===");
+        System.out.println("\n" + cyan("=== FastContentParse Demo Complete ==="));
     }
 }
