@@ -1,6 +1,6 @@
-# FastContentParse 0.1.2 — Standardized Document Parsing Library for Java
+# FastContentParse 0.1.3 [ALPHA-2026-08-09] — Standardized Content Normalization & Extraction Library
 
-[![Status](https://img.shields.io/badge/status-0.1.2-brightgreen.svg)](https://github.com/andrestubbe/FastContentParse/releases/tag/0.1.2)
+[![Status](https://img.shields.io/badge/status-0.1.3-brightgreen.svg)](https://github.com/andrestubbe/FastContentParse/releases/tag/0.1.3)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Java](https://img.shields.io/badge/Java-17+-blue.svg)](https://www.java.com)
 [![Platform](https://img.shields.io/badge/Platform-Windows%2010+-lightgrey.svg)]()
@@ -71,7 +71,8 @@ It provides:
 
 ## Key Features
 
-* **📄 Multi-Format Text Extraction** — Extracts clean text from PDF, RTF, Markdown, and plain text files.
+* **📄 Multi-Format Text Extraction** — Extracts clean text from PDF, RTF, Markdown, images (PNG, JPG, BMP via FastOCR), and plain text files.
+* **🔍 Native FastOCR Recognition** — Hardware-accelerated image OCR via Windows Media APIs with zero-copy memory management.
 * **⚡ Positional Geometry Protection** — Uses PDFBox layout extraction with `setSortByPosition(true)` to preserve visual reading order.
 * **🚀 Single-Pass RTF Parser** — Fast 0-regex single-pass RTF stripper eliminating control code clutter.
 * **🛡️ Binary Guard Protection** — Guards against binary `.doc` / `.docx` corruption with actionable exception feedback.
