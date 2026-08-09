@@ -134,7 +134,7 @@ Add the JitPack repository and the dependency to your `pom.xml`:
     <dependency>
         <groupId>com.github.andrestubbe</groupId>
         <artifactId>FastContentParse</artifactId>
-        <version>0.1.1</version>
+        <version>0.1.2</version>
     </dependency>
     <!-- Required for native library loading -->
     <dependency>
