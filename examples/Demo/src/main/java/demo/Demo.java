@@ -47,21 +47,18 @@ public class Demo {
 
             System.out.println(gray(String.format("      ✓ Parsed in %,d µs | Extracted %,d characters | Type: ", parseUs, doc.getText().length())) + cyan(doc.getType()) + "\n");
 
-            // ── Phase 2: Visual Paragraph Breakdown ───────────────────
+            // ── Phase 2: Full Visual Layout Paragraph Breakdown ───────
             System.out.println(gray("[2/2] VISUAL LAYOUT PARAGRAPH BREAKDOWN (Y-Gap Detected)"));
             String[] paragraphs = doc.getText().split("\n\\s*\n");
-            System.out.println(gray(String.format("      ✓ Detected %,d visual paragraphs separated by \\n\\n.", paragraphs.length)));
-            System.out.println(gray("      ----------------------------------------------------------"));
+            System.out.println(gray(String.format("      ✓ Extracted %,d visual paragraphs separated by \\n\\n.", paragraphs.length)));
+            System.out.println(gray("========================================================================"));
 
-            int limit = Math.min(5, paragraphs.length);
-            for (int i = 0; i < limit; i++) {
-                String snippet = paragraphs[i].replaceAll("\\s+", " ").trim();
-                if (snippet.length() > 140) {
-                    snippet = snippet.substring(0, 140) + "...";
-                }
-                System.out.println(gray("      • [Paragraph #" + (i + 1) + "] ") + white(snippet));
+            for (int i = 0; i < paragraphs.length; i++) {
+                String fullParagraphText = paragraphs[i].trim();
+                System.out.println(gray("--- [Paragraph #" + (i + 1) + "] --------------------------------------------------"));
+                System.out.println(white(fullParagraphText));
             }
-            System.out.println(gray("      ----------------------------------------------------------"));
+            System.out.println(gray("========================================================================"));
 
         } catch (Exception e) {
             System.out.println(gray("❌ Failed to parse PDF: ") + e.getMessage());
