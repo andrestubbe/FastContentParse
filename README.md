@@ -1,14 +1,14 @@
-# FastContentParse 0.1.3 [ALPHA-2026-08-09] — Standardized Content Normalization & Extraction Library
+# FastContentParse 0.1.4 [ALPHA] — Standardized Content Normalization & Extraction Library
 
-[![Status](https://img.shields.io/badge/status-0.1.3-brightgreen.svg)](https://github.com/andrestubbe/FastContentParse/releases/tag/0.1.3)
+[![Status](https://img.shields.io/badge/status-0.1.4-brightgreen.svg)](https://github.com/andrestubbe/FastContentParse/releases/tag/0.1.4)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Java](https://img.shields.io/badge/Java-17+-blue.svg)](https://www.java.com)
-[![Platform](https://img.shields.io/badge/Platform-Windows%2010+-lightgrey.svg)]()
+[![Platform](https://img.shields.io/badge/Platform-Cross--Platform-lightgrey.svg)]()
 [![JitPack](https://img.shields.io/badge/JitPack-ready-green.svg)](https://jitpack.io/#andrestubbe/FastContentParse)
 
 ---
 
-**⚡ Lightweight Java parser for text extraction, normalization, and PDF content ingestion.**
+**⚡ High-speed Java parser for text extraction, PDF content ingestion, and FastRegex SIMD whitespace normalization.**
 
 **FastContentParse** extracts text from plain files, Markdown, RTF, and PDF documents, then normalizes it for embedding and retrieval pipelines. It is designed to work alongside **[FastContentChunk](https://github.com/andrestubbe/FastContentChunk)**, **[FastAIVectorDB](https://github.com/andrestubbe/FastAIVectorDB)**, and **[FastAIRag](https://github.com/andrestubbe/FastAIRag)** to accelerate text extraction and Parent-Child context retention.
 

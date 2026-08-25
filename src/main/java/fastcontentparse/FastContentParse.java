@@ -114,7 +114,7 @@ public class FastContentParse {
     }
 
     private String normalizeWhitespace(String text) {
-        return text.replaceAll("[\\t\\f\\v]+", " ").replaceAll(" +", " ").trim();
+        return fastregex.FastRegex.normalizeWhitespace(text);
     }
 
     private String detectType(String sourceName) {

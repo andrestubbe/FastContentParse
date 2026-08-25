@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [0.1.4] - 2026-08-25
+### Changed
+- Integrated **FastRegex** zero-allocation single-pass whitespace compaction (`normalizeWhitespace`) delivering >13× faster document text normalization without heap churn.
+- Updated to FastCore 0.1.0 standard.
+
 ## [0.1.2] - 2026-08-08
 
 ### Added
