@@ -8,6 +8,7 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -61,5 +62,32 @@ class FastContentParseTest {
         assertNotNull(document);
         assertTrue(document.getText().contains("Hallo und Welt"));
         assertFalse(document.getText().contains("\\b"));
+    }
+
+    @Test
+    void parsesCsvFile() throws Exception {
+        Path tempFile = Files.createTempFile("test_data", ".csv");
+        Files.writeString(tempFile, "id,name,value\n101,TestA,42\n102,TestB,99", StandardCharsets.UTF_8);
+
+        FastContentParse parser = new FastContentParse();
+        ParsedDocument document = parser.parseFile(tempFile);
+
+        assertNotNull(document);
+        assertEquals("text/csv", document.getType());
+        assertTrue(document.getText().contains("TestA"));
+        assertTrue(document.getText().contains("42"));
+        Files.deleteIfExists(tempFile);
+    }
+
+    @Test
+    void parsesRealXlsxFileIfPresent() throws Exception {
+        Path xlsx = Path.of("..", "FastAIMatcher", "docs", "MAN_PRODUCT_PRICE_LIST_FN_INDD2D_20260728073200.xlsx");
+        if (Files.exists(xlsx)) {
+            FastContentParse parser = new FastContentParse();
+            ParsedDocument doc = parser.parseFile(xlsx);
+            assertNotNull(doc);
+            assertEquals("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", doc.getType());
+            assertFalse(doc.getText().isBlank());
+        }
     }
 }

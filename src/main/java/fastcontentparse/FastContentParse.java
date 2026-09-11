@@ -1,9 +1,11 @@
 package fastcontentparse;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.regex.Pattern;
@@ -34,6 +36,14 @@ public class FastContentParse {
 
         if ("image/ocr".equals(type)) {
             return parseImageOcr(path);
+        }
+
+        if ("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet".equals(type)) {
+            return parseXlsx(path);
+        }
+
+        if ("text/csv".equals(type)) {
+            return parseCsv(path);
         }
 
         String raw = Files.readString(path, StandardCharsets.UTF_8);
@@ -138,10 +148,118 @@ public class FastContentParse {
         if (lower.endsWith(".docx")) {
             return "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
         }
+        if (lower.endsWith(".csv")) {
+            return "text/csv";
+        }
+        if (lower.endsWith(".xlsx")) {
+            return "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+        }
         if (lower.endsWith(".png") || lower.endsWith(".jpg") || lower.endsWith(".jpeg") || lower.endsWith(".bmp")) {
             return "image/ocr";
         }
         return "text/plain";
+    }
+
+    private ParsedDocument parseCsv(Path path) throws IOException {
+        String raw = Files.readString(path, StandardCharsets.UTF_8);
+        String normalized = normalize(raw, "text/csv");
+        return new ParsedDocument("text/csv", normalized);
+    }
+
+    private ParsedDocument parseXlsx(Path path) throws IOException {
+        List<String> sharedStrings = new ArrayList<>();
+        StringBuilder textBuilder = new StringBuilder();
+
+        try (java.util.zip.ZipFile zip = new java.util.zip.ZipFile(path.toFile())) {
+            // 1. Read sharedStrings.xml if present
+            java.util.zip.ZipEntry sstEntry = zip.getEntry("xl/sharedStrings.xml");
+            if (sstEntry != null) {
+                try (InputStream is = zip.getInputStream(sstEntry)) {
+                    javax.xml.stream.XMLInputFactory factory = javax.xml.stream.XMLInputFactory.newDefaultFactory();
+                    factory.setProperty(javax.xml.stream.XMLInputFactory.IS_SUPPORTING_EXTERNAL_ENTITIES, Boolean.FALSE);
+                    factory.setProperty(javax.xml.stream.XMLInputFactory.SUPPORT_DTD, Boolean.FALSE);
+                    javax.xml.stream.XMLStreamReader reader = factory.createXMLStreamReader(is);
+
+                    StringBuilder currentText = null;
+                    while (reader.hasNext()) {
+                        int event = reader.next();
+                        if (event == javax.xml.stream.XMLStreamConstants.START_ELEMENT) {
+                            if ("t".equals(reader.getLocalName())) {
+                                currentText = new StringBuilder();
+                            }
+                        } else if (event == javax.xml.stream.XMLStreamConstants.CHARACTERS) {
+                            if (currentText != null) {
+                                currentText.append(reader.getText());
+                            }
+                        } else if (event == javax.xml.stream.XMLStreamConstants.END_ELEMENT) {
+                            if ("t".equals(reader.getLocalName())) {
+                                if (currentText != null) {
+                                    sharedStrings.add(currentText.toString());
+                                    currentText = null;
+                                }
+                            }
+                        }
+                    }
+                } catch (Exception e) {
+                    throw new IOException("Failed parsing XLSX shared strings: " + e.getMessage(), e);
+                }
+            }
+
+            // 2. Read sheet1.xml (primary sheet)
+            java.util.zip.ZipEntry sheetEntry = zip.getEntry("xl/worksheets/sheet1.xml");
+            if (sheetEntry != null) {
+                try (InputStream is = zip.getInputStream(sheetEntry)) {
+                    javax.xml.stream.XMLInputFactory factory = javax.xml.stream.XMLInputFactory.newDefaultFactory();
+                    factory.setProperty(javax.xml.stream.XMLInputFactory.IS_SUPPORTING_EXTERNAL_ENTITIES, Boolean.FALSE);
+                    factory.setProperty(javax.xml.stream.XMLInputFactory.SUPPORT_DTD, Boolean.FALSE);
+                    javax.xml.stream.XMLStreamReader reader = factory.createXMLStreamReader(is);
+
+                    String cellType = null;
+                    StringBuilder cellVal = null;
+
+                    while (reader.hasNext()) {
+                        int event = reader.next();
+                        if (event == javax.xml.stream.XMLStreamConstants.START_ELEMENT) {
+                            String name = reader.getLocalName();
+                            if ("c".equals(name)) {
+                                cellType = reader.getAttributeValue(null, "t");
+                            } else if ("v".equals(name)) {
+                                cellVal = new StringBuilder();
+                            }
+                        } else if (event == javax.xml.stream.XMLStreamConstants.CHARACTERS) {
+                            if (cellVal != null) {
+                                cellVal.append(reader.getText());
+                            }
+                        } else if (event == javax.xml.stream.XMLStreamConstants.END_ELEMENT) {
+                            String name = reader.getLocalName();
+                            if ("v".equals(name)) {
+                                if (cellVal != null) {
+                                    String rawVal = cellVal.toString().trim();
+                                    if ("s".equals(cellType)) {
+                                        try {
+                                            int idx = Integer.parseInt(rawVal);
+                                            if (idx >= 0 && idx < sharedStrings.size()) {
+                                                textBuilder.append(sharedStrings.get(idx)).append("\t");
+                                            }
+                                        } catch (NumberFormatException ignored) {}
+                                    } else if (!rawVal.isEmpty()) {
+                                        textBuilder.append(rawVal).append("\t");
+                                    }
+                                    cellVal = null;
+                                }
+                            } else if ("row".equals(name)) {
+                                textBuilder.append("\n");
+                            }
+                        }
+                    }
+                } catch (Exception e) {
+                    throw new IOException("Failed parsing XLSX worksheet: " + e.getMessage(), e);
+                }
+            }
+        }
+
+        String normalized = normalize(textBuilder.toString(), "text/plain");
+        return new ParsedDocument("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", normalized);
     }
 
     private ParsedDocument parseImageOcr(Path path) throws IOException {

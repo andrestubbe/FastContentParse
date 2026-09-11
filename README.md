@@ -1,6 +1,6 @@
-# FastContentParse 0.1.4 [ALPHA] — Standardized Content Normalization & Extraction Library
+# FastContentParse 0.1.5 [ALPHA] — Standardized Content Normalization & Extraction Library
 
-[![Status](https://img.shields.io/badge/status-0.1.4-brightgreen.svg)](https://github.com/andrestubbe/FastContentParse/releases/tag/0.1.4)
+[![Status](https://img.shields.io/badge/status-0.1.5-brightgreen.svg)](https://github.com/andrestubbe/FastContentParse/releases/tag/0.1.5)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Java](https://img.shields.io/badge/Java-17+-blue.svg)](https://www.java.com)
 [![Platform](https://img.shields.io/badge/Platform-Cross--Platform-lightgrey.svg)]()
@@ -8,9 +8,9 @@
 
 ---
 
-**⚡ High-speed Java parser for text extraction, PDF content ingestion, and FastRegex SIMD whitespace normalization.**
+**⚡ High-speed Java parser for text extraction, PDF ingestion, StAX streaming XLSX & CSV tables, and FastRegex SIMD whitespace normalization.**
 
-**FastContentParse** extracts text from plain files, Markdown, RTF, and PDF documents, then normalizes it for embedding and retrieval pipelines. It is designed to work alongside **[FastContentChunk](https://github.com/andrestubbe/FastContentChunk)**, **[FastAIVectorDB](https://github.com/andrestubbe/FastAIVectorDB)**, and **[FastAIRag](https://github.com/andrestubbe/FastAIRag)** to accelerate text extraction and Parent-Child context retention.
+**FastContentParse** extracts text from plain files, Markdown, RTF, PDF documents, CSV sheets, and OpenXML Excel spreadsheets (`.xlsx`), then normalizes it for embedding and retrieval pipelines. It is designed to work alongside **[FastContentChunk](https://github.com/andrestubbe/FastContentChunk)**, **[FastAIVectorDB](https://github.com/andrestubbe/FastAIVectorDB)**, and **[FastAIRag](https://github.com/andrestubbe/FastAIRag)** to accelerate text extraction and Parent-Child context retention.
 
 [![Showcase](docs/screenshot.png)](https://youtu.be/0QcuZMc58hM)
 
@@ -135,7 +135,7 @@ Add the JitPack repository and the dependency to your `pom.xml`:
     <dependency>
         <groupId>com.github.andrestubbe</groupId>
         <artifactId>FastContentParse</artifactId>
-        <version>0.1.2</version>
+        <version>0.1.5</version>
     </dependency>
     <!-- Required for native library loading -->
     <dependency>
@@ -154,7 +154,7 @@ repositories {
 }
 
 dependencies {
-    implementation 'com.github.andrestubbe:FastContentParse:0.1.1'
+    implementation 'com.github.andrestubbe:FastContentParse:0.1.5'
     // Required for native library loading
     implementation 'com.github.andrestubbe:FastCore:0.1.0'
 }
@@ -164,7 +164,7 @@ dependencies {
 
 Download the latest JARs directly to add them to your classpath:
 
-1. 📄 **[FastContentParse-0.1.1.jar](https://github.com/andrestubbe/FastContentParse/releases/download/0.1.1/FastContentParse-0.1.1.jar)** (The Core Library)
+1. 📄 **[FastContentParse-0.1.5.jar](https://github.com/andrestubbe/FastContentParse/releases/download/0.1.5/FastContentParse-0.1.5.jar)** (The Core Library)
 2. ⚙️ **[fastcore-0.1.0.jar](https://github.com/andrestubbe/FastCore/releases/download/0.1.0/fastcore-0.1.0.jar)** (Required Native JNI Loader)
 
 > [!IMPORTANT]
