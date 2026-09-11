@@ -1,7 +1,6 @@
 package fastcontentparse;
 
 import java.io.IOException;
-import java.io.Writer;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -169,8 +168,7 @@ public class FastContentParse {
     private ParsedDocument parsePdf(Path path) throws IOException {
         try (PDDocument document = Loader.loadPDF(path.toFile())) {
             VisualParagraphPDFTextStripper stripper = new VisualParagraphPDFTextStripper();
-            stripper.writeText(document, Writer.nullWriter());
-            String raw = stripper.buildVisualText();
+            String raw = stripper.extract(document);
             String normalized = normalize(raw, "application/pdf");
             return new ParsedDocument("application/pdf", normalized);
         }

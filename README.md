@@ -71,11 +71,11 @@ It provides:
 
 ## Key Features
 
-* **📄 Multi-Format Text Extraction** — Extracts clean text from PDF, RTF, Markdown, images (PNG, JPG, BMP via FastOCR), CSV tables, OpenXML spreadsheets (XLSX), and plain text files.
+* **📄 Multi-Format Text Extraction** — Extracts clean text from PDF, RTF, Markdown, images (PNG, JPG, BMP via FastOCR), CSV files, OpenXML spreadsheets (XLSX), and plain text files.
 * **🔍 Native FastOCR Recognition** — Hardware-accelerated image OCR via Windows Media APIs with zero-copy memory management.
-* **⚡ Positional Geometry Protection** — Uses PDFBox layout extraction with `setSortByPosition(true)` to preserve visual reading order.
-* **🚀 Single-Pass RTF Parser** — Fast 0-regex single-pass RTF stripper eliminating control code clutter.
-* **📊 StAX Streaming OpenXML & CSV** — Zero-allocation streaming parser for Excel spreadsheets (`.xlsx`) and RFC 4180 CSV tables.
+* **⚡ Positional Geometry Protection** — Uses PDFBox layout extraction with `setSortByPosition(true)` and scale-relative visual clustering.
+* **🚀 Single-Pass RTF Stripper** — Fast 0-regex single-pass RTF lexer and control word stripper.
+* **📊 StAX Streaming OpenXML** — Efficient XML streaming parser for multi-sheet Excel spreadsheets (`.xlsx`) supporting shared strings and inline strings.
 * **🛡️ Binary Guard Protection** — Guards against binary `.doc` / `.docx` corruption with actionable exception feedback.
 
 ---
@@ -85,11 +85,11 @@ It provides:
 | Format | Extension | Type | Engine / Strategy | Output |
 |---|---|---|---|---|
 | **Adobe PDF** | `.pdf` | Document | PDFBox + Visual Paragraph Geometry | Normalized Markdown/Text |
-| **OpenXML Spreadsheet** | `.xlsx` | Spreadsheet / Table | Native StAX Streaming (ZIP + sharedStrings) | TSV / Tabular Text |
-| **CSV Table** | `.csv` | Tabular Data | RFC 4180 Streaming Line Reader | Normalized Text / Grid |
+| **OpenXML Spreadsheet** | `.xlsx` | Spreadsheet / Table | StAX Streaming (ZIP + sharedStrings + inlineStr) | TSV / Tabular Text |
+| **CSV Table** | `.csv` | Tabular Data | UTF-8 Delimited Line Ingestion & Normalizer | Normalized Text / Grid |
 | **Rich Text Format** | `.rtf` | Document | Single-Pass 0-Regex Byte Stripper | Clean Unformatted Text |
 | **Markdown** | `.md`, `.markdown` | Structured Text | Native UTF-8 FastRegex Normalizer | Structured Text |
-| **Plain Text** | `.txt`, `.log` | Unstructured Text | Zero-Allocation Buffer Streaming | Clean Compact Text |
+| **Plain Text** | `.txt`, `.log` | Unstructured Text | UTF-8 File Reader & Normalizer | Clean Compact Text |
 | **Image / OCR** | `.png`, `.jpg`, `.bmp` | Visual Media | FastOCR (Hardware Accelerated Windows Media) | Extracted Text |
 | **MS Word (Legacy)** | `.doc`, `.docx` | Binary Word | Guard Protection | Actionable Exception Guidance |
 

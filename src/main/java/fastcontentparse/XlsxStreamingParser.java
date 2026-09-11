@@ -47,26 +47,29 @@ final class XlsxStreamingParser {
             if (sstEntry != null) {
                 try (InputStream is = zip.getInputStream(sstEntry)) {
                     XMLStreamReader reader = XML_FACTORY.createXMLStreamReader(is);
-
-                    StringBuilder currentText = null;
-                    while (reader.hasNext()) {
-                        int event = reader.next();
-                        if (event == XMLStreamConstants.START_ELEMENT) {
-                            if ("t".equals(reader.getLocalName())) {
-                                currentText = new StringBuilder();
-                            }
-                        } else if (event == XMLStreamConstants.CHARACTERS) {
-                            if (currentText != null) {
-                                currentText.append(reader.getText());
-                            }
-                        } else if (event == XMLStreamConstants.END_ELEMENT) {
-                            if ("t".equals(reader.getLocalName())) {
+                    try {
+                        StringBuilder currentText = null;
+                        while (reader.hasNext()) {
+                            int event = reader.next();
+                            if (event == XMLStreamConstants.START_ELEMENT) {
+                                if ("t".equals(reader.getLocalName())) {
+                                    currentText = new StringBuilder();
+                                }
+                            } else if (event == XMLStreamConstants.CHARACTERS) {
                                 if (currentText != null) {
-                                    sharedStrings.add(currentText.toString());
-                                    currentText = null;
+                                    currentText.append(reader.getText());
+                                }
+                            } else if (event == XMLStreamConstants.END_ELEMENT) {
+                                if ("t".equals(reader.getLocalName())) {
+                                    if (currentText != null) {
+                                        sharedStrings.add(currentText.toString());
+                                        currentText = null;
+                                    }
                                 }
                             }
                         }
+                    } finally {
+                        reader.close();
                     }
                 } catch (Exception e) {
                     throw new IOException("Failed parsing XLSX shared strings: " + e.getMessage(), e);
@@ -80,44 +83,62 @@ final class XlsxStreamingParser {
                 if (entryName.startsWith("xl/worksheets/sheet") && entryName.endsWith(".xml")) {
                     try (InputStream is = zip.getInputStream(entry)) {
                         XMLStreamReader reader = XML_FACTORY.createXMLStreamReader(is);
+                        try {
+                            String cellType = null;
+                            StringBuilder cellVal = null;
+                            StringBuilder inlineVal = null;
 
-                        String cellType = null;
-                        StringBuilder cellVal = null;
-
-                        while (reader.hasNext()) {
-                            int event = reader.next();
-                            if (event == XMLStreamConstants.START_ELEMENT) {
-                                String name = reader.getLocalName();
-                                if ("c".equals(name)) {
-                                    cellType = reader.getAttributeValue(null, "t");
-                                } else if ("v".equals(name)) {
-                                    cellVal = new StringBuilder();
-                                }
-                            } else if (event == XMLStreamConstants.CHARACTERS) {
-                                if (cellVal != null) {
-                                    cellVal.append(reader.getText());
-                                }
-                            } else if (event == XMLStreamConstants.END_ELEMENT) {
-                                String name = reader.getLocalName();
-                                if ("v".equals(name)) {
-                                    if (cellVal != null) {
-                                        String rawVal = cellVal.toString().trim();
-                                        if ("s".equals(cellType)) {
-                                            try {
-                                                int idx = Integer.parseInt(rawVal);
-                                                if (idx >= 0 && idx < sharedStrings.size()) {
-                                                    textBuilder.append(sharedStrings.get(idx)).append("\t");
-                                                }
-                                            } catch (NumberFormatException ignored) {}
-                                        } else if (!rawVal.isEmpty()) {
-                                            textBuilder.append(rawVal).append("\t");
-                                        }
-                                        cellVal = null;
+                            while (reader.hasNext()) {
+                                int event = reader.next();
+                                if (event == XMLStreamConstants.START_ELEMENT) {
+                                    String name = reader.getLocalName();
+                                    if ("c".equals(name)) {
+                                        cellType = reader.getAttributeValue(null, "t");
+                                        inlineVal = null;
+                                    } else if ("v".equals(name)) {
+                                        cellVal = new StringBuilder();
+                                    } else if ("t".equals(name) && "inlineStr".equals(cellType)) {
+                                        inlineVal = new StringBuilder();
                                     }
-                                } else if ("row".equals(name)) {
-                                    textBuilder.append("\n");
+                                } else if (event == XMLStreamConstants.CHARACTERS) {
+                                    if (cellVal != null) {
+                                        cellVal.append(reader.getText());
+                                    }
+                                    if (inlineVal != null) {
+                                        inlineVal.append(reader.getText());
+                                    }
+                                } else if (event == XMLStreamConstants.END_ELEMENT) {
+                                    String name = reader.getLocalName();
+                                    if ("v".equals(name)) {
+                                        if (cellVal != null) {
+                                            String rawVal = cellVal.toString().trim();
+                                            if ("s".equals(cellType)) {
+                                                try {
+                                                    int idx = Integer.parseInt(rawVal);
+                                                    if (idx >= 0 && idx < sharedStrings.size()) {
+                                                        textBuilder.append(sharedStrings.get(idx)).append("\t");
+                                                    }
+                                                } catch (NumberFormatException ignored) {}
+                                            } else if (!rawVal.isEmpty()) {
+                                                textBuilder.append(rawVal).append("\t");
+                                            }
+                                            cellVal = null;
+                                        }
+                                    } else if ("inlineStr".equals(name) || ("c".equals(name) && "inlineStr".equals(cellType))) {
+                                        if (inlineVal != null) {
+                                            String rawVal = inlineVal.toString().trim();
+                                            if (!rawVal.isEmpty()) {
+                                                textBuilder.append(rawVal).append("\t");
+                                            }
+                                            inlineVal = null;
+                                        }
+                                    } else if ("row".equals(name)) {
+                                        textBuilder.append("\n");
+                                    }
                                 }
                             }
+                        } finally {
+                            reader.close();
                         }
                     } catch (Exception e) {
                         throw new IOException("Failed parsing XLSX worksheet " + entryName + ": " + e.getMessage(), e);

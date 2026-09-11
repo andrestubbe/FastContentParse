@@ -80,6 +80,18 @@ public class VisualParagraphPDFTextStripper extends PDFTextStripper {
     }
 
     /**
+     * Extracts and structures layout-aware paragraph text from a PDF document.
+     *
+     * @param document the loaded PDF document
+     * @return clean, paragraph-separated textual content
+     * @throws IOException if text stripping encounters an I/O error
+     */
+    public String extract(org.apache.pdfbox.pdmodel.PDDocument document) throws IOException {
+        writeText(document, java.io.Writer.nullWriter());
+        return buildVisualText();
+    }
+
+    /**
      * Evaluates collected visual line profiles, filters recurring headers/footers,
      * clusters related lines into cohesive paragraphs, and clears internal state.
      *
@@ -181,9 +193,10 @@ public class VisualParagraphPDFTextStripper extends PDFTextStripper {
     private float calculateSimilarity(LineVisualProfile a, LineVisualProfile b) {
         float score = 0.0f;
 
-        // Font size similarity (diff < 15%)
+        // Relative font size similarity (< 15% deviation relative to reference font size)
+        float maxFontSize = Math.max(a.fontSize, b.fontSize);
         float sizeDiff = Math.abs(a.fontSize - b.fontSize);
-        if (sizeDiff < 1.5f) {
+        if (maxFontSize > 0 && (sizeDiff / maxFontSize) < 0.15f) {
             score += 1.0f;
         }
 
@@ -192,9 +205,10 @@ public class VisualParagraphPDFTextStripper extends PDFTextStripper {
             score += 1.0f;
         }
 
-        // Left alignment stability (X-position diff < 15px)
+        // Scale-relative left alignment stability (X-position diff < 1.2x font size)
         float xDiff = Math.abs(a.x - b.x);
-        if (xDiff < 15.0f) {
+        float avgFontSize = (a.fontSize + b.fontSize) * 0.5f;
+        if (xDiff < Math.max(12.0f, avgFontSize * 1.2f)) {
             score += 1.0f;
         }
 
