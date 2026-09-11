@@ -5,7 +5,6 @@ import java.io.Writer;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
@@ -88,19 +87,6 @@ public class FastContentParse {
         String type = explicitType != null ? explicitType : detectType(sourceName);
         String normalized = normalize(rawText, type);
         return new ParsedDocument(type, normalized);
-    }
-
-    /**
-     * Deprecated method stub retained for migration compatibility.
-     *
-     * @deprecated Use the dedicated FastContentChunk library for token and character chunking.
-     */
-    @Deprecated(forRemoval = true)
-    public List<String> chunkText(String text, int maxChunkSize, int overlap) {
-        if (text == null || text.isBlank()) {
-            return List.of();
-        }
-        throw new UnsupportedOperationException("chunkText was removed from FastContentParse; use FastContentChunk library");
     }
 
     private String normalize(String rawText, String explicitType) {
