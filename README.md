@@ -139,7 +139,7 @@ Higher-level RAG framework that orchestrates **FastContentParse** and **[FastCon
 
 ### Option 1: Maven (Recommended)
 
-Add the **JitPack** repository and the dependency to your `pom.xml`. Maven automatically resolves transitive dependencies (`FastOCR`, `FastRegex`, `FastCore`, `pdfbox`):
+Add the **JitPack** repository and the dependencies to your `pom.xml`:
 
 ```xml
 <repositories>
@@ -150,10 +150,35 @@ Add the **JitPack** repository and the dependency to your `pom.xml`. Maven autom
 </repositories>
 
 <dependencies>
+    <!-- FastContentParse Core -->
     <dependency>
         <groupId>com.github.andrestubbe</groupId>
         <artifactId>FastContentParse</artifactId>
         <version>0.1.5</version>
+    </dependency>
+
+    <!-- FastJava Ecosystem Dependencies -->
+    <dependency>
+        <groupId>com.github.andrestubbe</groupId>
+        <artifactId>FastRegex</artifactId>
+        <version>0.1.0</version>
+    </dependency>
+    <dependency>
+        <groupId>com.github.andrestubbe</groupId>
+        <artifactId>FastOCR</artifactId>
+        <version>0.1.1</version>
+    </dependency>
+    <dependency>
+        <groupId>com.github.andrestubbe</groupId>
+        <artifactId>FastCore</artifactId>
+        <version>0.1.0</version>
+    </dependency>
+
+    <!-- Document Decoding -->
+    <dependency>
+        <groupId>org.apache.pdfbox</groupId>
+        <artifactId>pdfbox</artifactId>
+        <version>3.0.0</version>
     </dependency>
 </dependencies>
 ```
@@ -167,7 +192,16 @@ repositories {
 }
 
 dependencies {
+    // FastContentParse Core
     implementation 'com.github.andrestubbe:FastContentParse:0.1.5'
+
+    // FastJava Ecosystem Dependencies
+    implementation 'com.github.andrestubbe:FastRegex:0.1.0'
+    implementation 'com.github.andrestubbe:FastOCR:0.1.1'
+    implementation 'com.github.andrestubbe:FastCore:0.1.0'
+
+    // Document Decoding
+    implementation 'org.apache.pdfbox:pdfbox:3.0.0'
 }
 ```
 
