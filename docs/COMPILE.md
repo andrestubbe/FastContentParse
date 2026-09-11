@@ -2,105 +2,47 @@
 
 ## Prerequisites
 
-- JDK 17+
-- Maven 3.9+
-- For native `FastContentChunk` builds: Visual Studio 2019/2022 (or Build Tools) and CMake
-
-## Quick Build (Java only)
-
-```powershell
-cd FastContentParse
-mvn clean package -DskipTests
-```
-
-## Build Native `FastContentChunk` (optional, Windows)
-
-1. Open PowerShell (Developer) or ensure VC++ build tools are in PATH.
-2. From the project root:
-
-```powershell
-cd FastContentParse\native\fastchunk
-mkdir build; cd build
-# If you have system cmake available use `cmake ..` otherwise use the Visual Studio packaged cmake
-cmake ..
-cmake --build . --config Release
-```
-
-Expected output: `build\Release\fastchunk.dll` (or platform equivalent).
-
-## Running the Demo
-
-Make the native DLL visible to Java (adjust path if needed):
-
-```powershell
-cd FastContentParse
-mvn -DskipTests package
-java -Djava.library.path="native\fastchunk\build\Release" -cp target\FastContentParse-0.1.0.jar;target\classes;target\dependency/* fastcontentdemo.DemoFastContent
-```
-
-## Troubleshooting
-
-- "Cannot find DLL": ensure `fastchunk.dll` exists in the path supplied to `-Djava.library.path` or in system PATH.
-- "UnsatisfiedLinkError": verify JNI symbol names (native function signatures) and that the `.def` exports are correct if used.
-# Building FastXXX from Source
-
-## Prerequisites
-
-- **JDK 17+** — [Download](https://adoptium.net/)
-- **Maven 3.9+** — [Download](https://maven.apache.org/download.cgi)
-- **Visual Studio 2022** — Community/Professional/Enterprise/BuildTools
+- **JDK 17+** (JDK 21 LTS recommended)
+- **Maven 3.9+**
 
 ## Quick Build
 
-```bash
-# 1. Build native DLL first (Windows)
-compile.bat
+From the repository root:
 
-# 2. Build JAR
+```powershell
+mvn clean install -DskipTests
+```
+
+## Running the Demo
+
+The Demo showcases PDF layout-aware paragraph extraction using FastANSI visual telemetry:
+
+```powershell
+.\run-demo.bat
+```
+
+Or manually:
+
+```powershell
+cd examples\Demo
+mvn compile exec:java -Dexec.mainClass=demo.Demo
+```
+
+## Running the Benchmarks
+
+JMH throughput benchmarks for PDFBox paragraph clustering and 0-regex RTF stripping:
+
+```powershell
+.\run-benchmark.bat
+```
+
+Or manually:
+
+```powershell
+cd examples\Benchmark
 mvn clean package -DskipTests
+java -jar target\benchmarks.jar
 ```
 
-## Build Commands
-
-| Command | Purpose |
-|---------|---------|
-| `../compile.bat` | Build native DLL (Windows) |
-| `mvn clean compile` | Compile Java only |
-| `mvn clean package` | Build FatJAR with DLL embedded |
-| `mvn test` | Run unit tests |
-
-## Native DLL Build
-
-The `../compile.bat` script:
-- Auto-detects Visual Studio 2019/2022
-- Auto-detects JAVA_HOME
-- Uses `native\fastXXX.def` for JNI exports
-- Outputs to `build\fastXXX.dll`
-
-The Maven `../pom.xml` will automatically pick up `build\fastXXX.dll` and bundle it inside the JAR.
-
-## JNI Exports (.def File)
-
-When using JNI, you MUST export your native functions in the `native\fastXXX.def` file:
-
-```def
-LIBRARY fastXXX
-EXPORTS
-    Java_fastXXX_FastXXX_doSomethingNative
-```
-
-**Important:** Function names must match Java's expected format:
-- Pattern: `Java_packagename_Classname_methodname`
-
-Without the `.def` file, JNI methods won't be exported and you'll get `UnsatisfiedLinkError`.
-
-## Troubleshooting
-
-**"Cannot find DLL"** — Run `../compile.bat` first
-
-**"UnsatisfiedLinkError"** — Common causes:
-1. DLL built but not included in JAR (check `build/` folder).
-2. JNI exports missing — Verify `.def` file.
-3. Wrong function name — Must match `Java_package_Class_method` exactly.
-
-**"Java version mismatch"** — Ensure JDK 17+ is installed and JAVA_HOME is set.
+---
+**Part of the FastJava Ecosystem** — *Making the JVM faster.*

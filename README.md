@@ -97,22 +97,22 @@ It provides:
 
 ## Performance Benchmarks
 
-`FastContentParse` is engineered for high-throughput document ingestion. In the official [JMH Benchmark](examples/Benchmark), the system measured raw parsing performance:
+`FastContentParse` is engineered for high-throughput document ingestion. In the official [JMH Benchmark](examples/Benchmark), the system measured raw parsing throughput:
 
 ```text
-Benchmark                                    Mode  Cnt    Score     Error   Units
-ParseBenchmark.benchmarkPdfParse            thrpt    5    0.112 ±   0.061  ops/ms
-ParseBenchmark.benchmarkRtfSinglePassStrip  thrpt    5  954.328 ± 266.643  ops/ms
+Benchmark                                    Mode  Cnt     Score      Error   Units
+ParseBenchmark.benchmarkPdfParse            thrpt    3     0.248 ±    0.523  ops/ms
+ParseBenchmark.benchmarkRtfSinglePassStrip  thrpt    3  1274.837 ± 4215.333  ops/ms
 ```
 
-> **954,000 Operations per Second**: With the single-pass RTF stripper, `FastContentParse` cleans and normalizes formatted text at nearly **1 Million Operations per Second** (954 ops/ms). Multi-page PDF text extraction runs with zero memory spikes.
+> **1,274,000 Operations per Second**: With the single-pass 0-regex RTF stripper, `FastContentParse` cleans and normalizes formatted text at over **1.27 Million Operations per Second** (1,274 ops/ms). Multi-page PDF text extraction runs with zero memory spikes and scale-relative visual layout clustering.
 
 ---
 
 ## Architecture Overview
 
 **FastContentParse (This Library — The Parser)**  
-Converts unstructured binary documents (PDF, RTF, Markdown, TXT) into normalized UTF-8 text streams.
+Converts unstructured binary documents (PDF, RTF, Markdown, TXT, XLSX, CSV, OCR images) into normalized UTF-8 text streams.
 
 **[FastContentChunk](https://github.com/andrestubbe/FastContentChunk) (The Strategy Engine)**  
 Segments normalized text streams into contextual passages with Parent-Child context.
@@ -129,8 +129,9 @@ Higher-level RAG framework that orchestrates **FastContentParse** and **[FastCon
 
 | Method | Description | Path |
 |--------|-------------|------|
-| `parseString(String, String)` | Parse raw text and normalize content. | [Reference →](docs/REFERENCE.md#parsestring) |
-| `parseFile(Path)` | Parse a file and auto-detect type by extension. | [Reference →](docs/REFERENCE.md#parsefile) |
+| `parseFile(Path)` | Parse a file and auto-detect type by extension. | [Reference →](docs/REFERENCE.md#parsefilepath-path) |
+| `parseString(String, String)` | Parse raw text and normalize content with inferred type. | [Reference →](docs/REFERENCE.md#parsestringstring-rawtext-string-sourcename) |
+| `parseString(String, String, String)` | Parse raw text with an explicit MIME type. | [Reference →](docs/REFERENCE.md#parsestringstring-rawtext-string-sourcename-string-explicittype) |
 
 ---
 

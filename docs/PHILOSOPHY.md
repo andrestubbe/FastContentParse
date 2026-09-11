@@ -1,29 +1,26 @@
-# The Philosophy of FastXXX
+# The Philosophy of FastContentParse
 
 > [!IMPORTANT]
-> **"Keine Kopien. Niemals. Kritischer JNI-Pfad. Native-First Performance."**
+> **"Zero Bloat. Streaming Ingestion. Layout-Preserving Normalization."**
 
-FastXXX is built on the principle that modern Java applications require **native-first** acceleration for performance-critical operations that the standard JVM APIs don't fully optimize.
+FastContentParse is built on the principle that modern Java RAG and search pipelines need **ultra-low-overhead content ingestion** without heavy office runtimes or sluggish regex cascades.
 
 ## Core Tenets
 
-1.  **Native-First Execution**
-    Bypass standard Java layers to reach the physical limits of the hardware using hand-tuned C++ and SIMD intrinsics.
+1. **Lightweight Routing & Modular Parsers**
+   Keep the main facade simple and route formats to specialized, zero-dependency streaming parsers (`XlsxStreamingParser`, `RtfStripper`, `VisualParagraphPDFTextStripper`).
 
-2.  **Zero-Copy JNI Architecture**
-    Minimize JNI transition costs by using direct memory access patterns and avoiding implicit memory copies between the JVM and the native layer.
+2. **Zero-Garbage Normalization**
+   Minimize heap churn during multi-page document parsing by avoiding redundant intermediate string duplication and offloading whitespace compaction to SIMD-accelerated **FastRegex**.
 
-3.  **Deterministic Latency**
-    Eliminate variance caused by JIT warm-up or garbage collection stalls in critical hot-paths.
+3. **Layout & Coordinate Awareness**
+   Preserve natural semantic paragraphs in PDFs using scale-relative visual typography clustering instead of naive whitespace splitting.
 
-4.  **Hardware-Aware Optimization**
-    Leverage modern CPU features (AVX, SSE, NEON) to process data at hardware-native speeds.
+4. **Stream Over DOM**
+   Large spreadsheets (`.xlsx`) stream sequentially via StAX and ZIP readers without loading massive XML DOM trees into memory.
 
-5.  **Blueprint Consistency**
-    As part of the **FastJava** ecosystem, FastXXX adheres to a standardized architecture:
-    *   **Native Backend**: Direct C++ implementation.
-    *   **Unified Loading**: Powered by `FastCore`.
-    *   **Premium Quality**: Built for high-performance systems and autonomous agents.
+5. **Ecosystem Synergy**
+   As part of the **FastJava** ecosystem, FastContentParse produces clean UTF-8 tokens tailored directly for **FastContentChunk** segmentation, **FastAIVectorDB** indexing, and **FastAIRag** pipelines.
 
 ---
-**⚡ FastXXX — Powering the next generation of Native Java.**
+**⚡ FastContentParse — Powering the next generation of High-Throughput Java RAG.**
