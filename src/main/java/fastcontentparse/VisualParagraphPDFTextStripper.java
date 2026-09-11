@@ -59,7 +59,6 @@ public class VisualParagraphPDFTextStripper extends PDFTextStripper {
                     text.trim()
             ));
         }
-        super.writeString(text, textPositions);
     }
 
     public String buildVisualText() {

@@ -17,11 +17,12 @@ import org.apache.pdfbox.text.PDFTextStripper;
 
 public class FastContentParse {
 
-    private static final Pattern WS_PATTERN = Pattern.compile("[\\t\\f\\v]+");
-
     public ParsedDocument parseFile(Path path) throws IOException {
-        if (path == null || !Files.exists(path)) {
-            throw new IOException("Input file does not exist");
+        if (path == null) {
+            throw new NullPointerException("path must not be null");
+        }
+        if (!Files.isRegularFile(path)) {
+            throw new IOException("Input path is not a regular file: " + path);
         }
 
         String fileName = path.getFileName().toString();
@@ -56,10 +57,12 @@ public class FastContentParse {
     }
 
     public ParsedDocument parseString(String rawText, String sourceName, String explicitType) {
-        String normalized = normalize(rawText, explicitType != null ? explicitType : detectType(sourceName));
-        return new ParsedDocument(explicitType != null ? explicitType : detectType(sourceName), normalized);
+        String type = explicitType != null ? explicitType : detectType(sourceName);
+        String normalized = normalize(rawText, type);
+        return new ParsedDocument(type, normalized);
     }
 
+    @Deprecated(forRemoval = true)
     public List<String> chunkText(String text, int maxChunkSize, int overlap) {
         if (text == null || text.isBlank()) {
             return List.of();
@@ -129,17 +132,19 @@ public class FastContentParse {
     }
 
     private static final javax.xml.stream.XMLInputFactory XML_FACTORY;
-    private static final Map<String, String> EXTENSION_TYPES = Map.of(
-            ".pdf", "application/pdf",
-            ".rtf", "text/rtf",
-            ".md", "text/markdown",
-            ".markdown", "text/markdown",
-            ".doc", "application/msword",
-            ".docx", "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-            ".csv", "text/csv",
-            ".xlsx", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-            ".png", "image/ocr",
-            ".jpg", "image/ocr"
+    private static final Map<String, String> EXTENSION_TYPES = Map.ofEntries(
+            Map.entry(".pdf", "application/pdf"),
+            Map.entry(".rtf", "text/rtf"),
+            Map.entry(".md", "text/markdown"),
+            Map.entry(".markdown", "text/markdown"),
+            Map.entry(".doc", "application/msword"),
+            Map.entry(".docx", "application/vnd.openxmlformats-officedocument.wordprocessingml.document"),
+            Map.entry(".csv", "text/csv"),
+            Map.entry(".xlsx", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"),
+            Map.entry(".png", "image/ocr"),
+            Map.entry(".jpg", "image/ocr"),
+            Map.entry(".jpeg", "image/ocr"),
+            Map.entry(".bmp", "image/ocr")
     );
 
     static {
@@ -160,9 +165,6 @@ public class FastContentParse {
             String mapped = EXTENSION_TYPES.get(ext);
             if (mapped != null) {
                 return mapped;
-            }
-            if (".jpeg".equals(ext) || ".bmp".equals(ext)) {
-                return "image/ocr";
             }
         }
         return "text/plain";
@@ -282,7 +284,7 @@ public class FastContentParse {
     private ParsedDocument parsePdf(Path path) throws IOException {
         try (PDDocument document = Loader.loadPDF(path.toFile())) {
             VisualParagraphPDFTextStripper stripper = new VisualParagraphPDFTextStripper();
-            stripper.getText(document); // process document text positions
+            stripper.writeText(document, java.io.Writer.nullWriter());
             String raw = stripper.buildVisualText();
             String normalized = normalize(raw, "application/pdf");
             return new ParsedDocument("application/pdf", normalized);
