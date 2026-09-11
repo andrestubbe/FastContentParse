@@ -8,6 +8,7 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.regex.Pattern;
 
 import org.apache.pdfbox.Loader;
@@ -127,35 +128,42 @@ public class FastContentParse {
         return fastregex.FastRegex.normalizeWhitespace(text);
     }
 
+    private static final javax.xml.stream.XMLInputFactory XML_FACTORY;
+    private static final Map<String, String> EXTENSION_TYPES = Map.of(
+            ".pdf", "application/pdf",
+            ".rtf", "text/rtf",
+            ".md", "text/markdown",
+            ".markdown", "text/markdown",
+            ".doc", "application/msword",
+            ".docx", "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+            ".csv", "text/csv",
+            ".xlsx", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            ".png", "image/ocr",
+            ".jpg", "image/ocr"
+    );
+
+    static {
+        XML_FACTORY = javax.xml.stream.XMLInputFactory.newDefaultFactory();
+        XML_FACTORY.setProperty(javax.xml.stream.XMLInputFactory.IS_SUPPORTING_EXTERNAL_ENTITIES, Boolean.FALSE);
+        XML_FACTORY.setProperty(javax.xml.stream.XMLInputFactory.SUPPORT_DTD, Boolean.FALSE);
+    }
+
     private String detectType(String sourceName) {
         if (sourceName == null) {
             return "text/plain";
         }
 
         String lower = sourceName.toLowerCase(Locale.ROOT);
-        if (lower.endsWith(".pdf")) {
-            return "application/pdf";
-        }
-        if (lower.endsWith(".rtf")) {
-            return "text/rtf";
-        }
-        if (lower.endsWith(".md") || lower.endsWith(".markdown")) {
-            return "text/markdown";
-        }
-        if (lower.endsWith(".doc")) {
-            return "application/msword";
-        }
-        if (lower.endsWith(".docx")) {
-            return "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
-        }
-        if (lower.endsWith(".csv")) {
-            return "text/csv";
-        }
-        if (lower.endsWith(".xlsx")) {
-            return "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
-        }
-        if (lower.endsWith(".png") || lower.endsWith(".jpg") || lower.endsWith(".jpeg") || lower.endsWith(".bmp")) {
-            return "image/ocr";
+        int dot = lower.lastIndexOf('.');
+        if (dot != -1) {
+            String ext = lower.substring(dot);
+            String mapped = EXTENSION_TYPES.get(ext);
+            if (mapped != null) {
+                return mapped;
+            }
+            if (".jpeg".equals(ext) || ".bmp".equals(ext)) {
+                return "image/ocr";
+            }
         }
         return "text/plain";
     }
@@ -168,17 +176,14 @@ public class FastContentParse {
 
     private ParsedDocument parseXlsx(Path path) throws IOException {
         List<String> sharedStrings = new ArrayList<>();
-        StringBuilder textBuilder = new StringBuilder();
+        StringBuilder textBuilder = new StringBuilder(128 * 1024);
 
         try (java.util.zip.ZipFile zip = new java.util.zip.ZipFile(path.toFile())) {
             // 1. Read sharedStrings.xml if present
             java.util.zip.ZipEntry sstEntry = zip.getEntry("xl/sharedStrings.xml");
             if (sstEntry != null) {
                 try (InputStream is = zip.getInputStream(sstEntry)) {
-                    javax.xml.stream.XMLInputFactory factory = javax.xml.stream.XMLInputFactory.newDefaultFactory();
-                    factory.setProperty(javax.xml.stream.XMLInputFactory.IS_SUPPORTING_EXTERNAL_ENTITIES, Boolean.FALSE);
-                    factory.setProperty(javax.xml.stream.XMLInputFactory.SUPPORT_DTD, Boolean.FALSE);
-                    javax.xml.stream.XMLStreamReader reader = factory.createXMLStreamReader(is);
+                    javax.xml.stream.XMLStreamReader reader = XML_FACTORY.createXMLStreamReader(is);
 
                     StringBuilder currentText = null;
                     while (reader.hasNext()) {
@@ -205,55 +210,56 @@ public class FastContentParse {
                 }
             }
 
-            // 2. Read sheet1.xml (primary sheet)
-            java.util.zip.ZipEntry sheetEntry = zip.getEntry("xl/worksheets/sheet1.xml");
-            if (sheetEntry != null) {
-                try (InputStream is = zip.getInputStream(sheetEntry)) {
-                    javax.xml.stream.XMLInputFactory factory = javax.xml.stream.XMLInputFactory.newDefaultFactory();
-                    factory.setProperty(javax.xml.stream.XMLInputFactory.IS_SUPPORTING_EXTERNAL_ENTITIES, Boolean.FALSE);
-                    factory.setProperty(javax.xml.stream.XMLInputFactory.SUPPORT_DTD, Boolean.FALSE);
-                    javax.xml.stream.XMLStreamReader reader = factory.createXMLStreamReader(is);
+            // 2. Read all sheets (sheet1.xml, sheet2.xml, etc.)
+            java.util.Enumeration<? extends java.util.zip.ZipEntry> entries = zip.entries();
+            while (entries.hasMoreElements()) {
+                java.util.zip.ZipEntry entry = entries.nextElement();
+                String entryName = entry.getName();
+                if (entryName.startsWith("xl/worksheets/sheet") && entryName.endsWith(".xml")) {
+                    try (InputStream is = zip.getInputStream(entry)) {
+                        javax.xml.stream.XMLStreamReader reader = XML_FACTORY.createXMLStreamReader(is);
 
-                    String cellType = null;
-                    StringBuilder cellVal = null;
+                        String cellType = null;
+                        StringBuilder cellVal = null;
 
-                    while (reader.hasNext()) {
-                        int event = reader.next();
-                        if (event == javax.xml.stream.XMLStreamConstants.START_ELEMENT) {
-                            String name = reader.getLocalName();
-                            if ("c".equals(name)) {
-                                cellType = reader.getAttributeValue(null, "t");
-                            } else if ("v".equals(name)) {
-                                cellVal = new StringBuilder();
-                            }
-                        } else if (event == javax.xml.stream.XMLStreamConstants.CHARACTERS) {
-                            if (cellVal != null) {
-                                cellVal.append(reader.getText());
-                            }
-                        } else if (event == javax.xml.stream.XMLStreamConstants.END_ELEMENT) {
-                            String name = reader.getLocalName();
-                            if ("v".equals(name)) {
-                                if (cellVal != null) {
-                                    String rawVal = cellVal.toString().trim();
-                                    if ("s".equals(cellType)) {
-                                        try {
-                                            int idx = Integer.parseInt(rawVal);
-                                            if (idx >= 0 && idx < sharedStrings.size()) {
-                                                textBuilder.append(sharedStrings.get(idx)).append("\t");
-                                            }
-                                        } catch (NumberFormatException ignored) {}
-                                    } else if (!rawVal.isEmpty()) {
-                                        textBuilder.append(rawVal).append("\t");
-                                    }
-                                    cellVal = null;
+                        while (reader.hasNext()) {
+                            int event = reader.next();
+                            if (event == javax.xml.stream.XMLStreamConstants.START_ELEMENT) {
+                                String name = reader.getLocalName();
+                                if ("c".equals(name)) {
+                                    cellType = reader.getAttributeValue(null, "t");
+                                } else if ("v".equals(name)) {
+                                    cellVal = new StringBuilder();
                                 }
-                            } else if ("row".equals(name)) {
-                                textBuilder.append("\n");
+                            } else if (event == javax.xml.stream.XMLStreamConstants.CHARACTERS) {
+                                if (cellVal != null) {
+                                    cellVal.append(reader.getText());
+                                }
+                            } else if (event == javax.xml.stream.XMLStreamConstants.END_ELEMENT) {
+                                String name = reader.getLocalName();
+                                if ("v".equals(name)) {
+                                    if (cellVal != null) {
+                                        String rawVal = cellVal.toString().trim();
+                                        if ("s".equals(cellType)) {
+                                            try {
+                                                int idx = Integer.parseInt(rawVal);
+                                                if (idx >= 0 && idx < sharedStrings.size()) {
+                                                    textBuilder.append(sharedStrings.get(idx)).append("\t");
+                                                }
+                                            } catch (NumberFormatException ignored) {}
+                                        } else if (!rawVal.isEmpty()) {
+                                            textBuilder.append(rawVal).append("\t");
+                                        }
+                                        cellVal = null;
+                                    }
+                                } else if ("row".equals(name)) {
+                                    textBuilder.append("\n");
+                                }
                             }
                         }
+                    } catch (Exception e) {
+                        throw new IOException("Failed parsing XLSX worksheet " + entryName + ": " + e.getMessage(), e);
                     }
-                } catch (Exception e) {
-                    throw new IOException("Failed parsing XLSX worksheet: " + e.getMessage(), e);
                 }
             }
         }
@@ -275,7 +281,7 @@ public class FastContentParse {
 
     private ParsedDocument parsePdf(Path path) throws IOException {
         try (PDDocument document = Loader.loadPDF(path.toFile())) {
-            VisualParagraphPDFTextStripper2 stripper = new VisualParagraphPDFTextStripper2();
+            VisualParagraphPDFTextStripper stripper = new VisualParagraphPDFTextStripper();
             stripper.getText(document); // process document text positions
             String raw = stripper.buildVisualText();
             String normalized = normalize(raw, "application/pdf");
