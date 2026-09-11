@@ -139,7 +139,7 @@ Higher-level RAG framework that orchestrates **FastContentParse** and **[FastCon
 
 ### Option 1: Maven (Recommended)
 
-Add the JitPack repository and the dependency to your `pom.xml`:
+Add the **JitPack** repository and the dependency to your `pom.xml`. Maven automatically resolves transitive dependencies (`FastOCR`, `FastRegex`, `FastCore`, `pdfbox`):
 
 ```xml
 <repositories>
@@ -148,17 +148,12 @@ Add the JitPack repository and the dependency to your `pom.xml`:
         <url>https://jitpack.io</url>
     </repository>
 </repositories>
+
 <dependencies>
     <dependency>
         <groupId>com.github.andrestubbe</groupId>
         <artifactId>FastContentParse</artifactId>
         <version>0.1.5</version>
-    </dependency>
-    <!-- Required for native library loading -->
-    <dependency>
-        <groupId>com.github.andrestubbe</groupId>
-        <artifactId>FastCore</artifactId>
-        <version>0.1.0</version>
     </dependency>
 </dependencies>
 ```
@@ -167,25 +162,27 @@ Add the JitPack repository and the dependency to your `pom.xml`:
 
 ```groovy
 repositories {
+    mavenCentral()
     maven { url 'https://jitpack.io' }
 }
 
 dependencies {
     implementation 'com.github.andrestubbe:FastContentParse:0.1.5'
-    // Required for native library loading
-    implementation 'com.github.andrestubbe:FastCore:0.1.0'
 }
 ```
 
-### Option 3: Direct Download (No Build Tool)
+### Option 3: Direct Download & Classpath (No Build Tool)
 
-Download the latest JARs directly to add them to your classpath:
+If building manually without Maven or Gradle, include `FastContentParse` alongside its runtime dependencies on your classpath:
 
-1. 📄 **[FastContentParse-0.1.5.jar](https://github.com/andrestubbe/FastContentParse/releases/download/0.1.5/FastContentParse-0.1.5.jar)** (The Core Library)
-2. ⚙️ **[fastcore-0.1.0.jar](https://github.com/andrestubbe/FastCore/releases/download/0.1.0/fastcore-0.1.0.jar)** (Required Native JNI Loader)
+1. 📄 **[FastContentParse-0.1.5.jar](https://github.com/andrestubbe/FastContentParse/releases/download/0.1.5/FastContentParse-0.1.5.jar)** — The Core Parser
+2. ⚡ **[FastRegex-0.1.0.jar](https://github.com/andrestubbe/FastRegex/releases/download/0.1.0/FastRegex-0.1.0.jar)** — SIMD Whitespace Normalization
+3. 👁️ **[FastOCR-0.1.1.jar](https://github.com/andrestubbe/FastOCR/releases/download/0.1.1/FastOCR-0.1.1.jar)** — Hardware-Accelerated Image OCR
+4. ⚙️ **[FastCore-0.1.0.jar](https://github.com/andrestubbe/FastCore/releases/download/0.1.0/fastcore-0.1.0.jar)** — Unified Native JNI Loader
+5. 📑 **Apache PDFBox 3.0.0+** (`pdfbox-3.0.0.jar`, `fontbox-3.0.0.jar`, `commons-logging-1.2.jar`) — PDF layout decoding
 
 > [!IMPORTANT]
-> All JARs must be included in your classpath for the native JNI bindings to function correctly.
+> JitPack (`https://jitpack.io`) is required to resolve `com.github.andrestubbe` ecosystem dependencies automatically. When running direct JARs without Maven, ensure all companion JARs above reside on `-cp`.
 
 ---
 
