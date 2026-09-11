@@ -9,8 +9,18 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Visual layout-aware PDF text stripper that clusters text lines into semantic paragraphs
+ * based on spatial coordinates, font metrics, and styling heuristics.
+ * <p>
+ * Eliminates repetitive recurring headers/footers across multi-page documents and fixes
+ * soft hyphenation breaks without redundant heap allocations.
+ */
 public class VisualParagraphPDFTextStripper extends PDFTextStripper {
 
+    /**
+     * Snapshot profile capturing geometric position and typography of an individual text line.
+     */
     public static class LineVisualProfile {
         public final float y;
         public final float fontSize;
@@ -21,6 +31,9 @@ public class VisualParagraphPDFTextStripper extends PDFTextStripper {
         public final boolean italic;
         public String text;
 
+        /**
+         * Constructs a visual profile for a line of text.
+         */
         public LineVisualProfile(float y, float fontSize, String fontFamily, float x, float width, boolean bold, boolean italic, String text) {
             this.y = y;
             this.fontSize = fontSize;
@@ -35,6 +48,11 @@ public class VisualParagraphPDFTextStripper extends PDFTextStripper {
 
     private final List<LineVisualProfile> rawLines = new ArrayList<>();
 
+    /**
+     * Creates a new visual stripper configured to sort characters by spatial position.
+     *
+     * @throws IOException if PDFBox stripper initialization fails
+     */
     public VisualParagraphPDFTextStripper() throws IOException {
         super();
         setSortByPosition(true);
@@ -61,6 +79,12 @@ public class VisualParagraphPDFTextStripper extends PDFTextStripper {
         }
     }
 
+    /**
+     * Evaluates collected visual line profiles, filters recurring headers/footers,
+     * clusters related lines into cohesive paragraphs, and clears internal state.
+     *
+     * @return clean, paragraph-separated textual content
+     */
     public String buildVisualText() {
         try {
             return buildVisualTextInternal();
