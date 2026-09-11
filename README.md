@@ -213,7 +213,7 @@ If building manually without Maven or Gradle, include `FastContentParse` alongsi
 2. ⚡ **[FastRegex-0.1.0.jar](https://github.com/andrestubbe/FastRegex/releases/download/0.1.0/FastRegex-0.1.0.jar)** — SIMD Whitespace Normalization
 3. 👁️ **[FastOCR-0.1.1.jar](https://github.com/andrestubbe/FastOCR/releases/download/0.1.1/FastOCR-0.1.1.jar)** — Hardware-Accelerated Image OCR
 4. ⚙️ **[FastCore-0.1.0.jar](https://github.com/andrestubbe/FastCore/releases/download/0.1.0/fastcore-0.1.0.jar)** — Unified Native JNI Loader
-5. 📑 **Apache PDFBox 3.0.0+** (`pdfbox-3.0.0.jar`, `fontbox-3.0.0.jar`, `commons-logging-1.2.jar`) — PDF layout decoding
+5. 📑 **[Apache PDFBox 3.0.0+](https://pdfbox.apache.org/download.html)** (`pdfbox-3.0.0.jar`, `fontbox-3.0.0.jar`, `commons-logging-1.2.jar`) — PDF layout decoding
 
 > [!IMPORTANT]
 > JitPack (`https://jitpack.io`) is required to resolve `com.github.andrestubbe` ecosystem dependencies automatically. When running direct JARs without Maven, ensure all companion JARs above reside on `-cp`.
