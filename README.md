@@ -67,6 +67,13 @@ It provides:
 - **Single-Pass RTF stripper** eliminating 4 sequential regex passes.
 - **Optional native tokenizer integration** through the separate `FastContentChunk` module for SIMD-accelerated chunking.
 
+| Feature | Apache Tika | Standard POI / PDFBox raw | FastContentParse |
+|:---|:---|:---|:---|
+| **Paragraph Reconstruction**| Basic flat stream | Line-by-line fragmented text | **Geometry Y-offset visual clustering** |
+| **RTF Parsing Overhead** | Full DOM / RTF EditorKit | Heavy regex passes | **Single-pass 0-regex byte stripper** |
+| **Spreadsheet Ingestion** | Full DOM memory model | Apache POI massive heap bloat | **StAX streaming (ZIP + sharedStrings)** |
+| **Pipeline Integration** | Generic metadata objects | Ad-hoc manual text parsing | **Direct output for FastContentChunk/RAG** |
+
 ---
 
 ## Key Features
