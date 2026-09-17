@@ -45,6 +45,7 @@ public class Demo {
 - [Why FastContentParse?](#why-fastcontentparse)
 - [Key Features](#key-features)
 - [Performance Benchmarks](#performance-benchmarks)
+- [Technical Demos & Benchmarks](#technical-demos--benchmarks)
 - [Architecture Overview](#architecture-overview)
 - [API Quick Reference](#api-quick-reference)
 - [Installation](#installation)
@@ -107,12 +108,23 @@ It provides:
 `FastContentParse` is engineered for high-throughput document ingestion. In the official [JMH Benchmark](examples/Benchmark), the system measured raw parsing throughput:
 
 ```text
-Benchmark                                    Mode  Cnt     Score      Error   Units
-ParseBenchmark.benchmarkPdfParse            thrpt    3     0.248 ±    0.523  ops/ms
-ParseBenchmark.benchmarkRtfSinglePassStrip  thrpt    3  1274.837 ± 4215.333  ops/ms
+Benchmark                               Mode  Cnt     Score      Error   Units
+Benchmark.benchmarkPdfParse            thrpt    3     0.248 ±    0.523  ops/ms
+Benchmark.benchmarkRtfSinglePassStrip  thrpt    3  1274.837 ± 4215.333  ops/ms
 ```
 
 > **1,274,000 Operations per Second**: With the single-pass 0-regex RTF stripper, `FastContentParse` cleans and normalizes formatted text at over **1.27 Million Operations per Second** (1,274 ops/ms). Multi-page PDF text extraction runs with zero memory spikes and scale-relative visual layout clustering.
+
+---
+
+## Technical Demos & Benchmarks
+
+Run standalone verification demos or execute JMH throughput benchmarks:
+
+| Type | Target / Launcher | Source File | Description |
+| :--- | :--- | :--- | :--- |
+| **Interactive Demo** | [`run-demo.bat`](run-demo.bat) | [`Demo.java`](examples/Demo/src/main/java/demo/Demo.java) | Live PDF/RTF document parsing and visual layout breakdown |
+| **Throughput Benchmark** | [`run-benchmark.bat`](run-benchmark.bat) | [`Benchmark.java`](examples/Benchmark/src/main/java/fastcontentparse/benchmark/Benchmark.java) | JMH benchmark evaluating PDF and RTF parsing throughput |
 
 ---
 
