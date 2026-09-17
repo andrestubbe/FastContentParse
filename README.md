@@ -45,9 +45,9 @@ public class Demo {
 - [Why FastContentParse?](#why-fastcontentparse)
 - [Key Features](#key-features)
 - [Performance Benchmarks](#performance-benchmarks)
-- [Technical Demos & Benchmarks](#technical-demos--benchmarks)
 - [Architecture Overview](#architecture-overview)
 - [API Quick Reference](#api-quick-reference)
+- [Technical Demos & Benchmarks](#technical-demos--benchmarks)
 - [Installation](#installation)
 - [Documentation](#documentation)
 - [Platform Support](#platform-support)
@@ -117,17 +117,6 @@ Benchmark.benchmarkRtfSinglePassStrip  thrpt    3  1274.837 ± 4215.333  ops/ms
 
 ---
 
-## Technical Demos & Benchmarks
-
-Run standalone verification demos or execute JMH throughput benchmarks:
-
-| Type | Target / Launcher | Source File | Description |
-| :--- | :--- | :--- | :--- |
-| **Interactive Demo** | [`run-demo.bat`](run-demo.bat) | [`Demo.java`](examples/Demo/src/main/java/demo/Demo.java) | Live PDF/RTF document parsing and visual layout breakdown |
-| **Throughput Benchmark** | [`run-benchmark.bat`](run-benchmark.bat) | [`Benchmark.java`](examples/Benchmark/src/main/java/fastcontentparse/benchmark/Benchmark.java) | JMH benchmark evaluating PDF and RTF parsing throughput |
-
----
-
 ## Architecture Overview
 
 **FastContentParse (This Library — The Parser)**  
@@ -151,6 +140,17 @@ Higher-level RAG framework that orchestrates **FastContentParse** and **[FastCon
 | `parseFile(Path)` | Parse a file and auto-detect type by extension. | [Reference →](docs/REFERENCE.md#parsefilepath-path) |
 | `parseString(String, String)` | Parse raw text and normalize content with inferred type. | [Reference →](docs/REFERENCE.md#parsestringstring-rawtext-string-sourcename) |
 | `parseString(String, String, String)` | Parse raw text with an explicit MIME type. | [Reference →](docs/REFERENCE.md#parsestringstring-rawtext-string-sourcename-string-explicittype) |
+
+---
+
+## Technical Demos & Benchmarks
+
+Run standalone verification demos or execute JMH throughput benchmarks:
+
+| Type | Target / Launcher | Source File | Description |
+| :--- | :--- | :--- | :--- |
+| **Interactive Demo** | [`run-demo.bat`](run-demo.bat) | [`Demo.java`](examples/Demo/src/main/java/demo/Demo.java) | Live PDF/RTF document parsing and visual layout breakdown |
+| **Throughput Benchmark** | [`run-benchmark.bat`](run-benchmark.bat) | [`Benchmark.java`](examples/Benchmark/src/main/java/fastcontentparse/benchmark/Benchmark.java) | JMH benchmark evaluating PDF and RTF parsing throughput |
 
 ---
 
