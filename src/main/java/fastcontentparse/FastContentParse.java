@@ -9,8 +9,6 @@ import java.util.Map;
 
 import fastocr.FastOCR;
 import fastregex.FastRegex;
-import org.apache.pdfbox.Loader;
-import org.apache.pdfbox.pdmodel.PDDocument;
 
 /**
  * High-performance, zero-bloat content extraction and normalization engine.
@@ -166,9 +164,8 @@ public class FastContentParse {
     }
 
     private ParsedDocument parsePdf(Path path) throws IOException {
-        try (PDDocument document = Loader.loadPDF(path.toFile())) {
-            VisualParagraphPDFTextStripper stripper = new VisualParagraphPDFTextStripper();
-            String raw = stripper.extract(document);
+        try (FastPDFium pdf = FastPDFium.open(path)) {
+            String raw = pdf.extractAllText();
             String normalized = normalize(raw, "application/pdf");
             return new ParsedDocument("application/pdf", normalized);
         }

@@ -30,7 +30,7 @@ mvn compile exec:java -Dexec.mainClass=demo.Demo
 
 ## Running the Benchmarks
 
-JMH throughput benchmarks for PDFBox paragraph clustering and 0-regex RTF stripping:
+JMH throughput benchmarks for PDFium native text extraction and 0-regex RTF stripping:
 
 ```powershell
 .\run-benchmark.bat

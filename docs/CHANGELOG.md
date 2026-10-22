@@ -4,6 +4,14 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [0.1.6] - 2026-10-22
+### Changed
+- Migrated PDF extraction to the official **Google PDFium** x64 (`pdfium.dll`) via pure Java 25 Foreign Function & Memory (FFM) — new `FastPDFium` module (memory/stream loading, page count, direct Unicode text extraction).
+- Raised build target to Java 25; FastRegex updated to 0.1.1.
+
+### Removed
+- Apache PDFBox and FontBox dependencies (including `VisualParagraphPDFTextStripper`).
+
 ## [0.1.5] - 2026-09-11
 ### Added
 - Native zero-dependency StAX streaming OpenXML Excel spreadsheet parser (`.xlsx`) via ZIP and shared-strings resolution.

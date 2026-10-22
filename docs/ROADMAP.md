@@ -2,7 +2,7 @@
 
 **Vision:** High-performance, zero-bloat content extraction and normalization for the FastJava RAG ecosystem.
 
-## 🟢 v0.1.0 – v0.1.5: Core Engine & Streaming (Current)
+## 🟢 v0.1.0 – v0.1.6: Core Engine & Streaming (Current)
 - [x] **PDF Visual Stripper**: Layout-aware paragraph preservation and scale-relative clustering.
 - [x] **StAX OpenXML Streaming**: Sequential multi-sheet `.xlsx` parsing with sharedStrings and inlineStr.
 - [x] **Single-Pass RTF Lexer**: Zero-regex RTF stripper.
